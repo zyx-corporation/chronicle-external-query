@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -51,6 +52,8 @@ def main() -> int:
             return _list_fixtures(args=args, locale=locale)
         if args.command == "list-plugins":
             return _list_plugins(args=args, locale=locale)
+        if args.command == "doctor-plugin":
+            return _doctor_plugin(args=args, locale=locale)
         if args.command == "render-artifact-report":
             return _render_artifact_report(args=args, locale=locale)
         if args.command == "render-comparison-report":
@@ -141,6 +144,11 @@ def _build_parser() -> argparse.ArgumentParser:
     plugins = subparsers.add_parser("list-plugins")
     plugins.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
     plugins.add_argument("--json", action="store_true")
+
+    plugin_doctor = subparsers.add_parser("doctor-plugin")
+    plugin_doctor.add_argument("plugin_name")
+    plugin_doctor.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
+    plugin_doctor.add_argument("--json", action="store_true")
 
     report = subparsers.add_parser("render-artifact-report")
     report.add_argument("artifact_path")
@@ -404,6 +412,50 @@ def _list_plugins(*, args: argparse.Namespace, locale: str) -> int:
     return _emit_result(payload=payload, as_json=args.json)
 
 
+def _doctor_plugin(*, args: argparse.Namespace, locale: str) -> int:
+    plugin = load_provider_plugin(args.plugin_name)
+    status = plugin.describe_status()
+    missing_required_env_vars: list[str] = []
+    env_checks = []
+    for field in status.config_fields:
+        raw_value = os.getenv(field.env_var, "")
+        present = bool(raw_value.strip())
+        if field.required and not present:
+            missing_required_env_vars.append(field.env_var)
+        env_checks.append(
+            {
+                "key": field.key,
+                "env_var": field.env_var,
+                "required": field.required,
+                "secret": field.secret,
+                "present": present,
+                "value_preview": _preview_env_value(raw_value, secret=field.secret),
+            }
+        )
+
+    payload: dict[str, Any] = {
+        "status": "plugin_diagnosed",
+        "summary": message("cli.plugin_doctor.success", locale=locale),
+        "plugin_name": status.plugin_name,
+        "available": status.available,
+        "availability_reason": status.availability_reason,
+        "missing_required_env_vars": missing_required_env_vars,
+        "env_checks": env_checks,
+        "config_fields": [
+            {
+                "key": field.key,
+                "env_var": field.env_var,
+                "required": field.required,
+                "secret": field.secret,
+                "description": field.description,
+            }
+            for field in status.config_fields
+        ],
+        "metadata": status.metadata,
+    }
+    return _emit_result(payload=payload, as_json=args.json)
+
+
 def _render_artifact_report(*, args: argparse.Namespace, locale: str) -> int:
     artifact = load_evaluation_artifact(Path(args.artifact_path))
     markdown = render_markdown_trial_report(artifact)
@@ -515,6 +567,7 @@ def _failure_summary_key(command: str | None) -> str:
         "compare-query-runs": "cli.compare_query_runs.failure",
         "list-fixtures": "cli.fixtures.failure",
         "list-plugins": "cli.plugins.failure",
+        "doctor-plugin": "cli.plugin_doctor.failure",
         "render-artifact-report": "cli.report.failure",
         "render-comparison-report": "cli.compare_report.failure",
     }
@@ -567,6 +620,15 @@ def _build_comparison_summary(comparison: dict[str, Any]) -> dict[str, Any]:
         "match_count_delta": comparison.get("match_count_delta", 0),
         "query_matches": comparison.get("query_matches", False),
     }
+
+
+def _preview_env_value(raw_value: str, *, secret: bool) -> str:
+    stripped = raw_value.strip()
+    if not stripped:
+        return "(unset)"
+    if secret:
+        return "<redacted>"
+    return stripped
 
 
 if __name__ == "__main__":

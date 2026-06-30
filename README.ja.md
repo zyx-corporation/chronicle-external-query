@@ -94,6 +94,7 @@ chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
 chronicle-external-query list-plugins --json
+chronicle-external-query doctor-plugin gemma4 --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
 chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin openai-compatible-hosted --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
@@ -126,6 +127,8 @@ supported baseline に混ぜていません。
 
 - provider plugin は明示登録され、`chronicle-external-query list-plugins --json`
   で inspection できます
+- plugin ごとの readiness は
+  `chronicle-external-query doctor-plugin <plugin-name> --json` で確認できます
 - credential は plugin ごとの環境変数に隔離されます
 - default の `pytest` と smoke baseline は provider plugin test を実行しません
 - provider が未設定でも baseline path は変化せず、available 状態だけが明示されます
@@ -143,6 +146,14 @@ opt-in provider test:
 
 ```bash
 pytest --run-provider-plugins tests/providers/
+```
+
+plugin readiness の確認例:
+
+```bash
+chronicle-external-query doctor-plugin static-test-provider --json
+chronicle-external-query doctor-plugin gemma4 --json
+chronicle-external-query doctor-plugin openai-compatible-hosted --json
 ```
 
 ## Local Gemma4 Plugin

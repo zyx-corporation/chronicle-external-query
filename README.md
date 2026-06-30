@@ -127,6 +127,7 @@ chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
 chronicle-external-query list-plugins --json
+chronicle-external-query doctor-plugin gemma4 --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
 chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin openai-compatible-hosted --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
@@ -181,6 +182,8 @@ mandatory.
 
 - provider plugins are registered explicitly and inspected through
   `chronicle-external-query list-plugins --json`
+- per-plugin readiness can be inspected through
+  `chronicle-external-query doctor-plugin <plugin-name> --json`
 - credentials stay isolated to plugin-specific environment variables
 - the default `pytest` and smoke baseline do not run provider plugin tests
 - provider availability is reported explicitly instead of mutating the baseline
@@ -199,6 +202,14 @@ Opt-in provider tests:
 
 ```bash
 pytest --run-provider-plugins tests/providers/
+```
+
+Provider readiness examples:
+
+```bash
+chronicle-external-query doctor-plugin static-test-provider --json
+chronicle-external-query doctor-plugin gemma4 --json
+chronicle-external-query doctor-plugin openai-compatible-hosted --json
 ```
 
 ## Local Gemma4 Plugin

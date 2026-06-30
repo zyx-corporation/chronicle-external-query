@@ -49,8 +49,10 @@ class StaticTestProviderPlugin(ProviderPluginProtocol):
     def describe_metadata(self) -> dict[str, object]:
         return {
             "credential_mode": "env_only",
+            "hosting_mode": "local",
             "provider_family": "test_provider",
             "runtime_integration": "reserved_only",
+            "supports_answer_generation": False,
         }
 
     def describe_status(self) -> ProviderPluginStatus:

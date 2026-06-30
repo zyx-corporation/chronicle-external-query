@@ -122,6 +122,8 @@ Optional provider plugin inspection:
 
 ```bash
 chronicle-external-query list-plugins --json
+chronicle-external-query doctor-plugin gemma4 --json
+chronicle-external-query doctor-plugin openai-compatible-hosted --json
 ```
 
 Current provider plugin boundary rules:
@@ -132,6 +134,8 @@ Current provider plugin boundary rules:
   explicit follow-on milestone
 - plugin credentials stay in plugin-specific environment variables instead of
   shared baseline configuration
+- `doctor-plugin` must redact secret values while still showing which required
+  env vars are missing
 
 Opt-in local gemma4 answer generation:
 

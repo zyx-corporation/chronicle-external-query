@@ -33,6 +33,7 @@ class Gemma4LocalPlugin(ProviderPluginProtocol):
     def describe_metadata(self) -> dict[str, object]:
         return {
             "credential_mode": "env_only",
+            "hosting_mode": "local",
             "provider_family": "local_llm",
             "runtime_integration": "answer_generation_enabled",
             "supports_answer_generation": True,

@@ -161,7 +161,61 @@ def test_list_plugins_cli_returns_provider_plugin_registry():
     assert payload["plugins"][1]["metadata"]["hosting_mode"] == "hosted"
     assert payload["plugins"][2]["plugin_name"] == "static-test-provider"
     assert payload["plugins"][0]["available"] is False
+    assert payload["plugins"][0]["metadata"]["hosting_mode"] == "local"
     assert payload["plugins"][0]["metadata"]["supports_answer_generation"] is True
+    assert payload["plugins"][2]["metadata"]["supports_answer_generation"] is False
+
+
+def test_doctor_plugin_cli_reports_missing_and_present_env_vars():
+    result = _run_cli(
+        "doctor-plugin",
+        "gemma4",
+        "--json",
+        "--locale",
+        "en",
+        env={
+            "GEMMA4_ENABLED": "true",
+            "GEMMA4_BASE_URL": "http://127.0.0.1:11434",
+            "GEMMA4_MODEL": "gemma4",
+            "GEMMA4_API_KEY": "secret-token",
+        },
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "plugin_diagnosed"
+    assert payload["plugin_name"] == "gemma4"
+    assert payload["available"] is True
+    assert payload["missing_required_env_vars"] == []
+    assert payload["metadata"]["hosting_mode"] == "local"
+    assert payload["env_checks"][0]["value_preview"] == "true"
+    assert payload["env_checks"][1]["value_preview"] == "http://127.0.0.1:11434"
+    assert payload["env_checks"][3]["value_preview"] == "(unset)"
+    assert payload["env_checks"][4]["value_preview"] == "<redacted>"
+
+
+def test_doctor_plugin_cli_reports_missing_required_env_vars_for_hosted_plugin():
+    result = _run_cli(
+        "doctor-plugin",
+        "openai-compatible-hosted",
+        "--json",
+        "--locale",
+        "en",
+        env={
+            "OPENAI_COMPATIBLE_HOSTED_ENABLED": "true",
+        },
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["plugin_name"] == "openai-compatible-hosted"
+    assert payload["available"] is False
+    assert payload["availability_reason"] == "missing required env var: OPENAI_COMPATIBLE_HOSTED_BASE_URL"
+    assert payload["missing_required_env_vars"] == [
+        "OPENAI_COMPATIBLE_HOSTED_BASE_URL",
+        "OPENAI_COMPATIBLE_HOSTED_MODEL",
+        "OPENAI_COMPATIBLE_HOSTED_API_KEY",
+    ]
 
 
 def test_run_query_cli_accepts_gemma4_answer_plugin(tmp_path: Path):
