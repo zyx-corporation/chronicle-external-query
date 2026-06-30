@@ -34,14 +34,38 @@ Usage:
   bash scripts/run_local_act.sh all
   bash scripts/run_local_act.sh release-verify
   bash scripts/run_local_act.sh release-notes
+  bash scripts/run_local_act.sh <mode> -- [extra act args]
 
 Environment:
   ACT_EVENT_FILE=/path/to/event.json   Override workflow_dispatch event payload.
+  ACT_ARGS="..."                       Extra arguments appended to every act invocation.
 EOF
 }
 
 MODE="${1:-}"
 EVENT_FILE="${ACT_EVENT_FILE:-$DEFAULT_EVENT_FILE}"
+shift || true
+
+EXTRA_ARGS=()
+if [[ "${1:-}" == "--" ]]; then
+  shift
+  EXTRA_ARGS=("$@")
+fi
+
+if [[ -n "${ACT_ARGS:-}" ]]; then
+  # shellcheck disable=SC2206
+  ACT_ARGS_ARRAY=(${ACT_ARGS})
+else
+  ACT_ARGS_ARRAY=()
+fi
+
+ACT_PREFIX=("${ACT_BIN}")
+if [[ ${#ACT_ARGS_ARRAY[@]} -gt 0 ]]; then
+  ACT_PREFIX+=("${ACT_ARGS_ARRAY[@]}")
+fi
+if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+  ACT_PREFIX+=("${EXTRA_ARGS[@]}")
+fi
 
 doctor() {
   echo "act_bin=${ACT_BIN}"
@@ -80,24 +104,24 @@ case "${MODE}" in
     doctor
     ;;
   ci)
-    exec "${ACT_BIN}" -W "${WORKFLOW_DIR}/ci.yml" -j test
+    exec "${ACT_PREFIX[@]}" -W "${WORKFLOW_DIR}/ci.yml" -j test
     ;;
   all)
     doctor
-    "${ACT_BIN}" -W "${WORKFLOW_DIR}/ci.yml" -j test
-    exec "${ACT_BIN}" workflow_dispatch \
+    "${ACT_PREFIX[@]}" -W "${WORKFLOW_DIR}/ci.yml" -j test
+    exec "${ACT_PREFIX[@]}" workflow_dispatch \
       -W "${WORKFLOW_DIR}/release.yml" \
       -e "${EVENT_FILE}" \
       -j build-release-notes
     ;;
   release-verify)
-    exec "${ACT_BIN}" workflow_dispatch \
+    exec "${ACT_PREFIX[@]}" workflow_dispatch \
       -W "${WORKFLOW_DIR}/release.yml" \
       -e "${EVENT_FILE}" \
       -j verify
     ;;
   release-notes)
-    exec "${ACT_BIN}" workflow_dispatch \
+    exec "${ACT_PREFIX[@]}" workflow_dispatch \
       -W "${WORKFLOW_DIR}/release.yml" \
       -e "${EVENT_FILE}" \
       -j build-release-notes

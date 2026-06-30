@@ -234,6 +234,7 @@ bash scripts/smoke_clean_checkout.sh
 bash scripts/run_local_act.sh doctor
 bash scripts/run_local_act.sh ci
 bash scripts/run_local_act.sh all
+ACT_ARGS="--pull=false" bash scripts/run_local_act.sh ci -- --verbose
 ```
 
 この repository には `.actrc` を commit してあり、`ubuntu-latest` の runner
@@ -268,6 +269,7 @@ bash scripts/run_local_act.sh release-notes
 を実行してください。まとめて rehearsal したい場合は `all` が使えます。`all`
 は CI baseline と release workflow の `build-release-notes` までを流し、
 release gate は workflow の依存関係の中で 1 回だけ通します。
+追加の `act` option を渡したい場合は、`ACT_ARGS` または `-- ...` を使います。
 
 ローカル `act` では artifact upload/download と GitHub release publish は
 無効のままです。ローカルでは `release-verify` で gate、`release-notes` で

@@ -143,3 +143,37 @@ def test_run_local_act_release_publish_is_rejected():
 
     assert result.returncode == 2
     assert "not supported under local act" in result.stderr
+
+
+def test_run_local_act_ci_accepts_extra_args_from_env_and_cli(tmp_path: Path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+
+    act_path = bin_dir / "act"
+    act_log = tmp_path / "act.log"
+
+    _write_executable(
+        act_path,
+        "#!/usr/bin/env bash\n"
+        "printf '%s\\n' \"$*\" >> \"" + str(act_log) + "\"\n",
+    )
+
+    env = os.environ.copy()
+    env["PATH"] = f"{bin_dir}:{env['PATH']}"
+    env["ACT_BIN"] = str(act_path)
+    env["ACT_ARGS"] = "--pull=false --verbose"
+
+    result = subprocess.run(
+        ["bash", str(SCRIPT_PATH), "ci", "--", "--artifact-server-path", "/tmp/act-artifacts"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert result.returncode == 0
+    act_calls = act_log.read_text(encoding="utf-8").splitlines()
+    assert len(act_calls) == 1
+    assert act_calls[0].startswith("--pull=false --verbose --artifact-server-path /tmp/act-artifacts ")
+    assert act_calls[0].endswith("-W /Users/tomyuk/Projects/Chronicle/chronicle-external-query/.github/workflows/ci.yml -j test")

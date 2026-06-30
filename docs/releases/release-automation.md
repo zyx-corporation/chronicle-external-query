@@ -70,6 +70,7 @@ bash scripts/run_local_act.sh ci
 bash scripts/run_local_act.sh all
 bash scripts/run_local_act.sh release-verify
 bash scripts/run_local_act.sh release-notes
+ACT_ARGS="--pull=false" bash scripts/run_local_act.sh ci -- --verbose
 ```
 
 Notes:
@@ -79,6 +80,7 @@ Notes:
 - set `ACT_EVENT_FILE=/path/to/event.json` to test alternate release inputs
 - `doctor` checks `act`, Docker, the Docker Desktop credential helper, and the event payload path before a rehearsal run
 - `all` runs the local CI baseline and then the release workflow through `build-release-notes`, letting the workflow dependency chain cover `verify` once
+- `ACT_ARGS` and trailing `-- ...` let operators pass through extra `act` flags for local debugging or cache-control runs
 - local `act` skips artifact upload/download steps because they depend on
   GitHub-hosted runtime tokens
 - local rehearsal covers `release-verify` and `release-notes`; real GitHub
