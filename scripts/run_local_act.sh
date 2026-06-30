@@ -85,10 +85,6 @@ case "${MODE}" in
   all)
     doctor
     "${ACT_BIN}" -W "${WORKFLOW_DIR}/ci.yml" -j test
-    "${ACT_BIN}" workflow_dispatch \
-      -W "${WORKFLOW_DIR}/release.yml" \
-      -e "${EVENT_FILE}" \
-      -j verify
     exec "${ACT_BIN}" workflow_dispatch \
       -W "${WORKFLOW_DIR}/release.yml" \
       -e "${EVENT_FILE}" \

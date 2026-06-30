@@ -78,7 +78,7 @@ Notes:
 - default `workflow_dispatch` inputs live in `.github/act/release-dispatch.event.json`
 - set `ACT_EVENT_FILE=/path/to/event.json` to test alternate release inputs
 - `doctor` checks `act`, Docker, the Docker Desktop credential helper, and the event payload path before a rehearsal run
-- `all` runs the local CI baseline, release verify gate, and release-notes job in sequence
+- `all` runs the local CI baseline and then the release workflow through `build-release-notes`, letting the workflow dependency chain cover `verify` once
 - local `act` skips artifact upload/download steps because they depend on
   GitHub-hosted runtime tokens
 - local rehearsal covers `release-verify` and `release-notes`; real GitHub

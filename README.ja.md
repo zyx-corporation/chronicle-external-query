@@ -265,7 +265,9 @@ bash scripts/run_local_act.sh release-notes
 `ACT_EVENT_FILE=...` で差し替えます。
 
 `act` が Docker や credential helper を見つけられない場合は、まず `doctor`
-を実行してください。まとめて rehearsal したい場合は `all` が使えます。
+を実行してください。まとめて rehearsal したい場合は `all` が使えます。`all`
+は CI baseline と release workflow の `build-release-notes` までを流し、
+release gate は workflow の依存関係の中で 1 回だけ通します。
 
 ローカル `act` では artifact upload/download と GitHub release publish は
 無効のままです。ローカルでは `release-verify` で gate、`release-notes` で

@@ -321,7 +321,9 @@ The default workflow-dispatch payload lives at
 when you want to test a different local release input set.
 
 Use `doctor` first if `act` cannot find Docker or its credential helper. Use
-`all` when you want the full local rehearsal in one command.
+`all` when you want the full local rehearsal in one command. It runs the CI
+baseline plus the release workflow up through `build-release-notes`, so the
+release gate is covered once through the workflow dependency chain.
 
 Under local `act`, artifact upload/download and GitHub release publication stay
 disabled. Use `release-verify` for the gate, `release-notes` for the notes job,
