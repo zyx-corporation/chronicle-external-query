@@ -321,6 +321,8 @@ bash scripts/run_local_act.sh release-notes
 The default workflow-dispatch payload lives at
 `.github/act/release-dispatch.event.json`. Override it with `ACT_EVENT_FILE=...`
 when you want to test a different local release input set.
+For the optional-plugin path, use `ACT_OPTIONAL_EVENT_FILE=...` when you want
+to swap only the optional matrix rehearsal inputs.
 
 Use `release-verify-optional` when you want the local release gate to exercise
 the optional plugin matrix without editing the default event payload.

@@ -80,6 +80,7 @@ Notes:
 - default `workflow_dispatch` inputs live in `.github/act/release-dispatch.event.json`
 - optional-plugin rehearsal inputs live in `.github/act/release-dispatch.optional-plugins.event.json`
 - set `ACT_EVENT_FILE=/path/to/event.json` to test alternate release inputs
+- set `ACT_OPTIONAL_EVENT_FILE=/path/to/event.json` to override only the optional-plugin rehearsal inputs
 - `doctor` checks `act`, Docker, the Docker Desktop credential helper, and the event payload path before a rehearsal run
 - `all` runs the local CI baseline and then the release workflow through `build-release-notes`, letting the workflow dependency chain cover `verify` once
 - `release-verify-optional` runs the same local release gate with `run_optional_plugin_matrix=true`

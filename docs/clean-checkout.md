@@ -43,11 +43,14 @@ If you want to reproduce repository CI and release rehearsal locally:
 bash scripts/run_local_act.sh doctor
 bash scripts/run_local_act.sh ci
 bash scripts/run_local_act.sh all
+bash scripts/run_local_act.sh release-verify-optional
 ```
 
 Use `doctor` first when `act` cannot find Docker or its credential helper.
 Use `all` when you want the CI baseline plus the release workflow through
 `build-release-notes` in one command.
+Use `ACT_OPTIONAL_EVENT_FILE=...` when you want `release-verify-optional` to
+rehearse a different optional-plugin input payload.
 
 ## Locale Override
 

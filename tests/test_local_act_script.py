@@ -7,6 +7,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT_PATH = REPO_ROOT / "scripts" / "run_local_act.sh"
+CI_WORKFLOW_PATH = REPO_ROOT / ".github/workflows/ci.yml"
 
 
 def _write_executable(path: Path, body: str) -> None:
@@ -122,7 +123,7 @@ def test_run_local_act_all_invokes_ci_then_release_notes_only(tmp_path: Path):
 
     act_calls = act_log.read_text(encoding="utf-8").splitlines()
     assert len(act_calls) == 2
-    assert act_calls[0].endswith("-W /Users/tomyuk/Projects/Chronicle/chronicle-external-query/.github/workflows/ci.yml -j test")
+    assert act_calls[0].endswith(f"-W {CI_WORKFLOW_PATH} -j test")
     assert "workflow_dispatch" in act_calls[1]
     assert "-j build-release-notes" in act_calls[1]
     assert "-j verify" not in act_calls[1]
@@ -176,7 +177,7 @@ def test_run_local_act_ci_accepts_extra_args_from_env_and_cli(tmp_path: Path):
     act_calls = act_log.read_text(encoding="utf-8").splitlines()
     assert len(act_calls) == 1
     assert act_calls[0].startswith("--pull=false --verbose --artifact-server-path /tmp/act-artifacts ")
-    assert act_calls[0].endswith("-W /Users/tomyuk/Projects/Chronicle/chronicle-external-query/.github/workflows/ci.yml -j test")
+    assert act_calls[0].endswith(f"-W {CI_WORKFLOW_PATH} -j test")
 
 
 def test_run_local_act_release_verify_optional_uses_optional_event_file(tmp_path: Path):
@@ -210,3 +211,39 @@ def test_run_local_act_release_verify_optional_uses_optional_event_file(tmp_path
     assert len(act_calls) == 1
     assert ".github/act/release-dispatch.optional-plugins.event.json" in act_calls[0]
     assert act_calls[0].endswith("-j verify")
+
+
+def test_run_local_act_release_verify_optional_accepts_override_event_file(tmp_path: Path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+
+    act_path = bin_dir / "act"
+    act_log = tmp_path / "act.log"
+    override_event_file = tmp_path / "optional-event.json"
+    override_event_file.write_text('{"inputs":{"version":"v0.3.0-test"}}\n', encoding="utf-8")
+
+    _write_executable(
+        act_path,
+        "#!/usr/bin/env bash\n"
+        "printf '%s\\n' \"$*\" >> \"" + str(act_log) + "\"\n",
+    )
+
+    env = os.environ.copy()
+    env["PATH"] = f"{bin_dir}:{env['PATH']}"
+    env["ACT_BIN"] = str(act_path)
+    env["ACT_OPTIONAL_EVENT_FILE"] = str(override_event_file)
+
+    result = subprocess.run(
+        ["bash", str(SCRIPT_PATH), "release-verify-optional"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert result.returncode == 0
+    act_calls = act_log.read_text(encoding="utf-8").splitlines()
+    assert len(act_calls) == 1
+    assert f"-e {override_event_file}" in act_calls[0]
+    assert ".github/act/release-dispatch.optional-plugins.event.json" not in act_calls[0]

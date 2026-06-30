@@ -265,6 +265,8 @@ bash scripts/run_local_act.sh release-notes
 デフォルトの `workflow_dispatch` payload は
 `.github/act/release-dispatch.event.json` に置いてあります。別の入力で試す場合は
 `ACT_EVENT_FILE=...` で差し替えます。
+optional plugin 側だけ別入力で試したい場合は、
+`ACT_OPTIONAL_EVENT_FILE=...` を使います。
 
 optional plugin matrix まで含めて local release gate を試す場合は、
 `release-verify-optional` を使います。

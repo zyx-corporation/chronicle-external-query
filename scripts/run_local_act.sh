@@ -40,12 +40,15 @@ Usage:
 
 Environment:
   ACT_EVENT_FILE=/path/to/event.json   Override workflow_dispatch event payload.
+  ACT_OPTIONAL_EVENT_FILE=/path/to/event.json
+                                       Override optional-plugin workflow_dispatch payload.
   ACT_ARGS="..."                       Extra arguments appended to every act invocation.
 EOF
 }
 
 MODE="${1:-}"
 EVENT_FILE="${ACT_EVENT_FILE:-$DEFAULT_EVENT_FILE}"
+OPTIONAL_EVENT_FILE="${ACT_OPTIONAL_EVENT_FILE:-$OPTIONAL_PLUGIN_EVENT_FILE}"
 shift || true
 
 EXTRA_ARGS=()
@@ -125,7 +128,7 @@ case "${MODE}" in
   release-verify-optional)
     exec "${ACT_PREFIX[@]}" workflow_dispatch \
       -W "${WORKFLOW_DIR}/release.yml" \
-      -e "${OPTIONAL_PLUGIN_EVENT_FILE}" \
+      -e "${OPTIONAL_EVENT_FILE}" \
       -j verify
     ;;
   release-notes)
