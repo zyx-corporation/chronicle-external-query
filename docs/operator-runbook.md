@@ -121,6 +121,8 @@ fixtures.
 Optional provider plugin inspection:
 
 ```bash
+bash scripts/bootstrap_plugin_env.sh
+source .env.local.plugins
 chronicle-external-query list-plugins --json
 chronicle-external-query doctor-plugin gemma4 --json
 chronicle-external-query doctor-plugin openai-compatible-hosted --json
@@ -149,6 +151,8 @@ chronicle-external-query run-query /path/to/handoff-bundle --query "release plan
 Operational expectations:
 
 - the local runtime must expose an OpenAI-compatible `POST /v1/chat/completions`
+- `bash scripts/bootstrap_plugin_env.sh` should detect the first local `gemma4*`
+  model from Ollama and write `.env.local.plugins`
 - if `--answer-plugin gemma4` is requested without valid config, the command
   must fail explicitly
 - if `gemma4` is not requested, the deterministic baseline answer path remains
@@ -167,6 +171,7 @@ chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "rel
 Operational expectations:
 
 - hosted credentials stay isolated to the hosted-plugin environment variables
+- `.env.local.plugins` should be treated as machine-local and must stay out of git
 - hosted plugin failure must remain explicit and must not mutate the baseline path
 - comparative evaluation should be reviewable through the normal artifact compare
   contract rather than a separate hosted-only format

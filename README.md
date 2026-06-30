@@ -135,6 +135,14 @@ chronicle-external-query render-artifact-report trial-artifact.json --output tri
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
 ```
 
+Local plugin bootstrap:
+
+```bash
+bash scripts/bootstrap_plugin_env.sh
+source .env.local.plugins
+chronicle-external-query doctor-plugin gemma4 --json
+```
+
 ## Fixture Registry
 
 Milestone F adds a pluggable fixture registry without changing the supported
@@ -238,6 +246,8 @@ Optional environment:
 Example:
 
 ```bash
+bash scripts/bootstrap_plugin_env.sh
+source .env.local.plugins
 GEMMA4_ENABLED=true \
 GEMMA4_BASE_URL=http://127.0.0.1:11434 \
 GEMMA4_MODEL=gemma4 \
@@ -268,6 +278,15 @@ Required environment:
 - `OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example`
 - `OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model`
 - `OPENAI_COMPATIBLE_HOSTED_API_KEY=...`
+
+Recommended local staging path:
+
+- `bash scripts/bootstrap_plugin_env.sh`
+- `source .env.local.plugins`
+- set `OPENAI_COMPATIBLE_HOSTED_ENABLED=true`
+- fill `OPENAI_COMPATIBLE_HOSTED_MODEL`
+- fill `OPENAI_COMPATIBLE_HOSTED_API_KEY`
+- keep `OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://api.openai.com` for the default OpenAI hosted path, or replace it with another OpenAI-compatible provider base URL
 
 Optional environment:
 
