@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run CLI validation smoke
+        run: chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
+
+      - name: Run CLI bundle inspection smoke
+        run: chronicle-external-query show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
+
+      - name: Run CLI query smoke
+        run: chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --json
+
+      - name: Run CLI hybrid query smoke
+        run: chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture vector" --mode hybrid --vector-fixture tests/fixtures/vector_matches/sample-vector-matches.json --json
+
+      - name: Render CLI artifact report smoke
+        run: |
+          chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --output /tmp/chronicle-artifact.json --json
+          chronicle-external-query render-artifact-report /tmp/chronicle-artifact.json --output /tmp/chronicle-trial-report.md --json
+
+      - name: Render CLI comparison report smoke
+        run: |
+          chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "nonexistent lookup" --mode graph --output /tmp/chronicle-left-artifact.json --json
+          chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --output /tmp/chronicle-right-artifact.json --json
+          chronicle-external-query render-comparison-report /tmp/chronicle-left-artifact.json /tmp/chronicle-right-artifact.json --output /tmp/chronicle-comparison-report.md --json

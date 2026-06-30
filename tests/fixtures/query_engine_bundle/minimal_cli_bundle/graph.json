@@ -1,0 +1,68 @@
+{
+  "schema_version": "0.3",
+  "generated_at": "2026-06-28T13:17:28.700373+09:00",
+  "chronicle_id": "chr_d6cb25478ffa4f48844d12a21c32e3b8",
+  "export_manifest": {
+    "schema_version": "0.4",
+    "export_format": "graph-json",
+    "generated_at": "2026-06-28T13:17:28.700108+09:00",
+    "chronicle_id": "chr_d6cb25478ffa4f48844d12a21c32e3b8",
+    "chronicle_title": "Fixture Bundle",
+    "tool_name": "chronicle-stack",
+    "tool_version": "0.3.0",
+    "event_count": 1,
+    "export_options": {},
+    "notes": [
+      "This manifest is provenance metadata, not cryptographic proof.",
+      "Export outputs are derived views; chronicle.jsonl remains primary."
+    ]
+  },
+  "export_contract": {
+    "contract_version": "1.0",
+    "export_family": "graph-json",
+    "primary_record": ".chronicle/chronicle.jsonl",
+    "derived_only": true,
+    "deterministic": true,
+    "mutates_primary_record": false,
+    "external_runtime_required": false,
+    "graph_runtime_included": false,
+    "incremental_source": "chronicle_events",
+    "incremental_mode": "event-driven_rebuildable",
+    "incremental_checkpoint_field": "event_id",
+    "incremental_ordering_field": "timestamp",
+    "incremental_expectations": [
+      "new Chronicle events may add or supersede derived nodes and edges",
+      "consumers may checkpoint by event_id while preserving Chronicle event ordering",
+      "full graph state must remain rebuildable from the primary JSONL without external storage",
+      "tombstone and seal lifecycle markers may remove or annotate derived graph entities on rebuild"
+    ],
+    "authority_note": "Graph export remains derived and non-authoritative; Chronicle primary records stay authoritative."
+  },
+  "nodes": [
+    {
+      "node_id": "n_chronicle_chr_d6cb25478ffa4f48844d12a21c32e3b8",
+      "node_type": "chronicle",
+      "source_id": "chr_d6cb25478ffa4f48844d12a21c32e3b8",
+      "title": "Fixture Bundle",
+      "summary": "",
+      "metadata": {}
+    },
+    {
+      "node_id": "n_event_evt_68ab2b1818b64b0daae09a02228e6d38",
+      "node_type": "event",
+      "source_id": "evt_68ab2b1818b64b0daae09a02228e6d38",
+      "title": "Fixture Bundle created",
+      "summary": "chronicle_created",
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e_chronicle_has_event_n_chronicle_chr_d6cb25478ffa4f48844d12a21c32e3b8_n_event_evt_68ab2b1818b64b0daae09a02228e6d38",
+      "edge_type": "chronicle_has_event",
+      "from_node_id": "n_chronicle_chr_d6cb25478ffa4f48844d12a21c32e3b8",
+      "to_node_id": "n_event_evt_68ab2b1818b64b0daae09a02228e6d38",
+      "metadata": {}
+    }
+  ]
+}

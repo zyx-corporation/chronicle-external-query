@@ -1,0 +1,69 @@
+# Runtime Answer Contract
+
+This document records the current local runtime answer contract for
+`chronicle-external-query`.
+
+## Goals
+
+- produce reviewable local runtime outputs instead of opaque prompt dumps
+- keep retrieval provenance attached to every answer
+- preserve the difference between answer text, runtime status, and source-backed
+  evidence
+
+## Runtime Answer Fields
+
+Current top-level fields:
+
+- `query`
+- `status`
+- `answer_text`
+- `prompt`
+- `graph_matches`
+- `provenance`
+- `metadata`
+
+## Status Values
+
+Current statuses:
+
+- `answered`
+- `insufficient_context`
+
+These are downstream runtime statuses only. They do not imply Chronicle review,
+acceptance, or authoritative truth.
+
+## Metadata Expectations
+
+Current metadata includes:
+
+- `status`
+- `retrieval_mode`
+- `match_count`
+- `sources`
+- `source_match_counts`
+- `overlap_source_record_ids`
+- `insufficiency_reasons`
+- `coverage_summary`
+
+## Evaluation Artifact Alignment
+
+Runtime answers are serialized into local evaluation artifacts that preserve:
+
+- artifact version
+- query
+- runtime status
+- retrieval mode
+- answer text
+- metadata
+- provenance
+- matches
+
+This supports repeated-run comparison without implying Chronicle-side trial
+acceptance.
+
+Rendered markdown trial reports should preserve at least:
+
+- bundle contract versions
+- retrieval source counts
+- overlap source record ids
+- insufficiency reasons when present

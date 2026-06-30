@@ -1,0 +1,28 @@
+[
+  {
+    "source": "vector",
+    "identifier": "v_evt_overlap",
+    "source_record_id": "evt_68ab2b1818b64b0daae09a02228e6d38",
+    "entity_type": "event",
+    "title": "Fixture Bundle created",
+    "summary": "vector overlap",
+    "score": 3.0,
+    "matched_terms": ["fixture"],
+    "metadata": {
+      "provider": "sample-fixture"
+    }
+  },
+  {
+    "source": "vector",
+    "identifier": "v_evt_vector_only",
+    "source_record_id": "evt_vector_only",
+    "entity_type": "event",
+    "title": "Vector-only supporting record",
+    "summary": "vector-only support",
+    "score": 2.0,
+    "matched_terms": ["vector"],
+    "metadata": {
+      "provider": "sample-fixture"
+    }
+  }
+]

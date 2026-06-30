@@ -1,0 +1,28 @@
+{
+  "contract_version": "1.0",
+  "bundle_kind": "query_engine_handoff_bundle",
+  "query": "fixture query",
+  "handoff_contract_version": "1.0",
+  "graph_export_contract_version": "1.0",
+  "adapter_skeleton_contract_version": "1.0",
+  "primary_record_path": ".chronicle/chronicle.jsonl",
+  "files": [
+    "bundle_manifest.json",
+    "query_engine_handoff.json",
+    "query_engine_adapter_skeleton.json",
+    "graph.json",
+    "ACCEPTANCE_CHECKLIST.md",
+    "TRIAL_REPORT_TEMPLATE.md"
+  ],
+  "acceptance_checklist_included": true,
+  "trial_report_template_included": true,
+  "referenced_record_count": 2,
+  "eligible_context_count": 0,
+  "import_validation_status": "contract_validated",
+  "import_ready": true,
+  "notes": [
+    "bundle remains local, read-only, and descriptive",
+    "Chronicle primary records remain authoritative over derived bundle files",
+    "graph export contains 2 nodes and 1 edges"
+  ]
+}
