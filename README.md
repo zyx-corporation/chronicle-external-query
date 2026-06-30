@@ -300,7 +300,16 @@ are explicitly required by the release operator.
 
 ## Release Status
 
-The first supported local downstream runtime baseline is documented in
+The current release-preparation target is `v0.3.0`.
+
+Release-closeout artifacts:
+
+- [v0.3.0 Release Notes](docs/releases/v0.3.0-release-notes.md)
+- [v0.3.0 Completion Checklist](docs/releases/v0.3.0-completion-checklist.md)
+- [v0.3.0 Boundary Summary](docs/releases/v0.3.0-boundary-summary.md)
+
+The original first supported local downstream runtime baseline remains
+documented in
 [docs/releases/v0.2.0-first-supported-baseline.md](docs/releases/v0.2.0-first-supported-baseline.md).
 
 The post-`v0.2.0` extension track now has Milestone F implemented locally:
@@ -326,3 +335,6 @@ place without changing the supported baseline release boundary.
 Milestone K is now implemented too: Chronicle write-back remains explicitly out
 of scope, so the roadmap is complete without introducing any accidental
 Chronicle mutation path.
+
+That means the repository is now prepared for a `v0.3.0` release on the
+current supported boundary.
