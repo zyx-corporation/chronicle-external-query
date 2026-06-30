@@ -154,6 +154,9 @@ Delivered:
 
 ## Milestone J: Release Automation Beyond Smoke CI
 
+Status:
+Completed on 2026-06-30.
+
 Goal:
 Automate release packaging and publication after the plugin seams stabilize.
 
@@ -168,6 +171,16 @@ Exit Criteria:
 
 - release automation reflects the supported boundary clearly
 - plugin-specific failures do not block the baseline release unless explicitly required
+
+Delivered:
+
+- `.github/workflows/release.yml` now supports tag-driven and manual release flows
+- `scripts/release_candidate_gate.sh` combines the baseline smoke gate with
+  separate plugin compatibility reporting
+- `scripts/generate_release_notes.py` generates release notes from repo-resident
+  roadmap and plugin registry context
+- `scripts/check_plugin_compatibility.py` reports optional plugin compatibility
+  without making plugin status a baseline blocker
 
 ## Milestone K: Chronicle Write-back Boundary Review
 

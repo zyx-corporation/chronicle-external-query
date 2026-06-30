@@ -61,6 +61,7 @@ chronicle-external-query/
 - [Chronicle Trial Alignment](docs/chronicle-trial-alignment.md)
 - [Clean Checkout](docs/clean-checkout.md)
 - [Operator Runbook](docs/operator-runbook.md)
+- [Release Automation](docs/releases/release-automation.md)
 - [i18n Strategy](docs/i18n-strategy.md)
 - [ADR Index](docs/adr/README.md)
 
@@ -226,6 +227,20 @@ bash scripts/smoke_clean_checkout.sh
 
 同じ baseline を GitHub Actions の `main` 向け push / pull request でも実行します。
 
+## Release Automation
+
+Milestone J では baseline CI の先にある release automation を追加しました。
+
+- release workflow: `.github/workflows/release.yml`
+- release-candidate gate: `bash scripts/release_candidate_gate.sh`
+- release notes generator:
+  `python scripts/generate_release_notes.py --version vX.Y.Z`
+- plugin compatibility report:
+  `python scripts/check_plugin_compatibility.py`
+
+optional plugin check は、明示的に要求しない限り baseline release を blocking
+しません。
+
 ## リリース状況
 
 最初の supported local downstream runtime baseline は
@@ -235,6 +250,7 @@ bash scripts/smoke_clean_checkout.sh
 今後の拡張方針は [docs/extension-roadmap.md](docs/extension-roadmap.md) と
 [docs/pluggable-extension-spec.md](docs/pluggable-extension-spec.md) を参照してください。
 
-現時点では Milestone I まで実装済みで、fixture 拡張は registry 経由、
+現時点では Milestone J まで実装済みで、fixture 拡張は registry 経由、
 provider credential は分離、`gemma4` と hosted provider は opt-in、
-baseline smoke は従来どおり committed fixture 固定です。
+release automation は追加済み、baseline smoke は従来どおり committed fixture
+固定です。

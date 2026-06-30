@@ -316,6 +316,7 @@ Any future implementation of this spec should update:
 - `README.ja.md`
 - `docs/testing-strategy.md`
 - `docs/operator-runbook.md`
+- `docs/releases/`
 - `docs/runtime-answer-contract.md`
 - `docs/retrieval-contract.md` when retrieval plugins change result semantics
 

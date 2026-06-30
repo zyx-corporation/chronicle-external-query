@@ -97,6 +97,7 @@ chronicle-external-query/
 - [Chronicle Trial Alignment](docs/chronicle-trial-alignment.md)
 - [Clean Checkout](docs/clean-checkout.md)
 - [Operator Runbook](docs/operator-runbook.md)
+- [Release Automation](docs/releases/release-automation.md)
 - [i18n Strategy](docs/i18n-strategy.md)
 - [ADR Index](docs/adr/README.md)
 
@@ -284,6 +285,18 @@ bash scripts/smoke_clean_checkout.sh
 
 The same baseline runs in GitHub Actions on pushes and pull requests to `main`.
 
+## Release Automation
+
+Milestone J adds release automation beyond the baseline CI path.
+
+- release workflow: `.github/workflows/release.yml`
+- release-candidate gate: `bash scripts/release_candidate_gate.sh`
+- release notes generator: `python scripts/generate_release_notes.py --version vX.Y.Z`
+- plugin compatibility report: `python scripts/check_plugin_compatibility.py`
+
+Optional plugin checks remain non-blocking for the baseline release unless they
+are explicitly required by the release operator.
+
 ## Release Status
 
 The first supported local downstream runtime baseline is documented in
@@ -304,3 +317,7 @@ provider-free by default.
 Milestone I is now implemented locally too: hosted provider plugins remain
 optional, and comparative evaluation can be run without changing the baseline
 artifact contract.
+
+Milestone J is now implemented locally as well: release notes, RC gating,
+plugin-compatibility reporting, and tag/manual GitHub release automation are in
+place without changing the supported baseline release boundary.

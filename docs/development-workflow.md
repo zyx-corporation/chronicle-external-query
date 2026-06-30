@@ -66,6 +66,8 @@ Focus on:
 
 - CLI entrypoints
 - CI checks
+- release workflows
+- release-note generation
 - operator setup
 - reproducible local runs
 
@@ -77,6 +79,7 @@ Update the relevant document when behavior changes:
 - `docs/roadmap.md` for milestone movement
 - `docs/testing-strategy.md` for validation coverage changes
 - `docs/i18n-strategy.md` for user-facing wording and locale changes
+- `docs/releases/` for release automation and release evidence changes
 - `docs/adr/` when a boundary decision becomes architectural
 
 ## Pull Request Checklist
