@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORKFLOW_DIR="${ROOT_DIR}/.github/workflows"
 DEFAULT_EVENT_FILE="${ROOT_DIR}/.github/act/release-dispatch.event.json"
-DOCKER_DESKTOP_BIN="/Applications/Docker.app/Contents/Resources/bin"
+DOCKER_DESKTOP_BIN="${DOCKER_DESKTOP_BIN:-/Applications/Docker.app/Contents/Resources/bin}"
 
 ACT_BIN="${ACT_BIN:-}"
 if [[ -z "${ACT_BIN}" ]]; then
