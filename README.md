@@ -286,6 +286,15 @@ bash scripts/smoke_clean_checkout.sh
 
 The same baseline runs in GitHub Actions on pushes and pull requests to `main`.
 
+Local `act` execution:
+
+```bash
+bash scripts/run_local_act.sh ci
+```
+
+This repository includes a checked-in `.actrc` so `act` can run non-interactively
+with the `ubuntu-latest` runner mapping already selected.
+
 ## Release Automation
 
 Milestone J adds release automation beyond the baseline CI path.
@@ -297,6 +306,21 @@ Milestone J adds release automation beyond the baseline CI path.
 
 Optional plugin checks remain non-blocking for the baseline release unless they
 are explicitly required by the release operator.
+
+Local `act` release verification:
+
+```bash
+bash scripts/run_local_act.sh release-verify
+bash scripts/run_local_act.sh release-notes
+```
+
+The default workflow-dispatch payload lives at
+`.github/act/release-dispatch.event.json`. Override it with `ACT_EVENT_FILE=...`
+when you want to test a different local release input set.
+
+Under local `act`, artifact upload/download and GitHub release publication stay
+disabled. Use `release-verify` for the gate, `release-notes` for the notes job,
+then let GitHub run the publish path on tag push or hosted workflow dispatch.
 
 ## Release Status
 

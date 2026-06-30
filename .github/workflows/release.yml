@@ -29,9 +29,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
+        if: ${{ !env.ACT }}
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Show act Python runtime
+        if: ${{ env.ACT }}
+        run: python3 --version
 
       - name: Run release candidate gate
         env:
@@ -39,10 +44,15 @@ jobs:
         run: bash scripts/release_candidate_gate.sh
 
       - name: Upload plugin compatibility report
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: plugin-compatibility-report
           path: /tmp/chronicle-plugin-compatibility.json
+
+      - name: Note act local plugin report path
+        if: ${{ env.ACT }}
+        run: echo "act path leaves plugin compatibility output at /tmp/chronicle-plugin-compatibility.json"
 
   build-release-notes:
     runs-on: ubuntu-latest
@@ -52,26 +62,41 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
+        if: ${{ !env.ACT }}
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      - name: Show act Python runtime
+        if: ${{ env.ACT }}
+        run: python3 --version
+
       - name: Install package and dependencies
+        if: ${{ !env.ACT }}
         run: |
-          python -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip
           pip install -e ".[dev]"
+
+      - name: Note act direct release-notes path
+        if: ${{ env.ACT }}
+        run: echo "act path runs the release-notes generator directly from src"
 
       - name: Generate release notes
         env:
           RELEASE_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || inputs.version }}
         run: |
-          PYTHONPATH=src python scripts/generate_release_notes.py --version "${RELEASE_VERSION}" --output RELEASE_NOTES.md
+          PYTHONPATH=src python3 scripts/generate_release_notes.py --version "${RELEASE_VERSION}" --output RELEASE_NOTES.md
 
       - name: Upload release notes
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: release-notes
           path: RELEASE_NOTES.md
+
+      - name: Note act local release-notes path
+        if: ${{ env.ACT }}
+        run: echo "act path leaves generated release notes at ${PWD}/RELEASE_NOTES.md"
 
   publish-release:
     runs-on: ubuntu-latest
