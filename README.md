@@ -4,6 +4,8 @@
 It reads Chronicle-generated handoff bundles and keeps query/runtime execution
 outside Chronicle's primary-record boundary.
 
+Japanese README: [README.ja.md](README.ja.md)
+
 ## Boundary
 
 - Chronicle `.chronicle/chronicle.jsonl` remains authoritative
@@ -42,6 +44,8 @@ chronicle-external-query/
 
 - [Architecture](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
+- [Extension Roadmap](docs/extension-roadmap.md)
+- [Pluggable Extension Spec](docs/pluggable-extension-spec.md)
 - [Coding Guidelines](docs/coding-guidelines.md)
 - [Development Workflow](docs/development-workflow.md)
 - [Testing Strategy](docs/testing-strategy.md)
