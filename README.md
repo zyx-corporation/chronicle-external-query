@@ -289,7 +289,9 @@ The same baseline runs in GitHub Actions on pushes and pull requests to `main`.
 Local `act` execution:
 
 ```bash
+bash scripts/run_local_act.sh doctor
 bash scripts/run_local_act.sh ci
+bash scripts/run_local_act.sh all
 ```
 
 This repository includes a checked-in `.actrc` so `act` can run non-interactively
@@ -317,6 +319,9 @@ bash scripts/run_local_act.sh release-notes
 The default workflow-dispatch payload lives at
 `.github/act/release-dispatch.event.json`. Override it with `ACT_EVENT_FILE=...`
 when you want to test a different local release input set.
+
+Use `doctor` first if `act` cannot find Docker or its credential helper. Use
+`all` when you want the full local rehearsal in one command.
 
 Under local `act`, artifact upload/download and GitHub release publication stay
 disabled. Use `release-verify` for the gate, `release-notes` for the notes job,

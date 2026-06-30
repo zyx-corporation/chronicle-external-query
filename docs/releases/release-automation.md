@@ -65,7 +65,9 @@ RUN_OPTIONAL_PLUGIN_MATRIX=1 bash scripts/release_candidate_gate.sh
 Run GitHub Actions locally with `act`:
 
 ```bash
+bash scripts/run_local_act.sh doctor
 bash scripts/run_local_act.sh ci
+bash scripts/run_local_act.sh all
 bash scripts/run_local_act.sh release-verify
 bash scripts/run_local_act.sh release-notes
 ```
@@ -75,6 +77,8 @@ Notes:
 - repository-local `.actrc` pins the runner image mapping and avoids the first-run prompt
 - default `workflow_dispatch` inputs live in `.github/act/release-dispatch.event.json`
 - set `ACT_EVENT_FILE=/path/to/event.json` to test alternate release inputs
+- `doctor` checks `act`, Docker, the Docker Desktop credential helper, and the event payload path before a rehearsal run
+- `all` runs the local CI baseline, release verify gate, and release-notes job in sequence
 - local `act` skips artifact upload/download steps because they depend on
   GitHub-hosted runtime tokens
 - local rehearsal covers `release-verify` and `release-notes`; real GitHub

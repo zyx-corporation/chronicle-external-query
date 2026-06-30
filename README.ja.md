@@ -231,7 +231,9 @@ bash scripts/smoke_clean_checkout.sh
 ローカル `act` 実行:
 
 ```bash
+bash scripts/run_local_act.sh doctor
 bash scripts/run_local_act.sh ci
+bash scripts/run_local_act.sh all
 ```
 
 この repository には `.actrc` を commit してあり、`ubuntu-latest` の runner
@@ -261,6 +263,9 @@ bash scripts/run_local_act.sh release-notes
 デフォルトの `workflow_dispatch` payload は
 `.github/act/release-dispatch.event.json` に置いてあります。別の入力で試す場合は
 `ACT_EVENT_FILE=...` で差し替えます。
+
+`act` が Docker や credential helper を見つけられない場合は、まず `doctor`
+を実行してください。まとめて rehearsal したい場合は `all` が使えます。
 
 ローカル `act` では artifact upload/download と GitHub release publish は
 無効のままです。ローカルでは `release-verify` で gate、`release-notes` で
