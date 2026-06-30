@@ -7,3 +7,4 @@ Current ADRs:
 
 - [ADR-001: Downstream Consumer Development and Testing Discipline](ADR-001-downstream-consumer-development-and-testing-discipline.md)
 - [ADR-002: Downstream Runtime Localization and Language Selection](ADR-002-downstream-runtime-localization-and-language-selection.md)
+- [ADR-003: Chronicle Write-back Remains Out of Scope](ADR-003-chronicle-writeback-remains-out-of-scope.md)

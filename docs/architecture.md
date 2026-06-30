@@ -24,3 +24,17 @@ derived bundle outputs.
 
 This repository can produce local evaluation artifacts or runtime responses, but
 it should not mutate Chronicle primary records directly.
+
+## Authority Boundary
+
+- Chronicle primary records remain authoritative
+- handoff bundles remain derived downstream inputs
+- local evaluation artifacts and plugin-backed comparisons remain
+  non-authoritative review support
+- no Chronicle write-back path exists in this repository
+
+See also:
+
+- [Chronicle Trial Alignment](chronicle-trial-alignment.md)
+- [Chronicle Write-back Boundary](chronicle-writeback-boundary.md)
+- [ADR-003](adr/ADR-003-chronicle-writeback-remains-out-of-scope.md)

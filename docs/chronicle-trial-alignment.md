@@ -51,3 +51,15 @@ Local evaluation artifacts currently map as follows:
 - no event id is assigned from Chronicle core
 - local comparison artifacts are still review support, not Chronicle evidence on
   their own
+
+## Final Boundary Review
+
+Milestone K closes this gap intentionally rather than extending it.
+
+- Chronicle write-back remains out of scope for this repository
+- local artifacts stay downstream-derived even when plugin-backed or
+  release-automation-assisted
+- any future Chronicle mutation would require a separate architectural decision
+
+See [Chronicle Write-back Boundary](chronicle-writeback-boundary.md) and
+[ADR-003](adr/ADR-003-chronicle-writeback-remains-out-of-scope.md).

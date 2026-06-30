@@ -184,6 +184,9 @@ Delivered:
 
 ## Milestone K: Chronicle Write-back Boundary Review
 
+Status:
+Completed on 2026-06-30.
+
 Goal:
 Revisit whether any trial-record or downstream review persistence should be
 bridged back to Chronicle, and only do so through an explicit boundary review.
@@ -199,6 +202,17 @@ Exit Criteria:
 - write-back either remains explicitly out of scope or is accepted through a
   dedicated architecture decision
 - no accidental Chronicle mutation path is introduced
+
+Delivered:
+
+- ADR-003 accepts the decision that Chronicle write-back remains out of scope
+- `docs/chronicle-writeback-boundary.md` records the final authority boundary
+- architecture and trial-alignment docs now point at the explicit no-write-back
+  decision
+
+## Roadmap Status
+
+All currently defined milestones through Milestone K are complete.
 
 ## Recommended Execution Order
 

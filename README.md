@@ -95,6 +95,7 @@ chronicle-external-query/
 - [Retrieval Contract](docs/retrieval-contract.md)
 - [Runtime Answer Contract](docs/runtime-answer-contract.md)
 - [Chronicle Trial Alignment](docs/chronicle-trial-alignment.md)
+- [Chronicle Write-back Boundary](docs/chronicle-writeback-boundary.md)
 - [Clean Checkout](docs/clean-checkout.md)
 - [Operator Runbook](docs/operator-runbook.md)
 - [Release Automation](docs/releases/release-automation.md)
@@ -321,3 +322,7 @@ artifact contract.
 Milestone J is now implemented locally as well: release notes, RC gating,
 plugin-compatibility reporting, and tag/manual GitHub release automation are in
 place without changing the supported baseline release boundary.
+
+Milestone K is now implemented too: Chronicle write-back remains explicitly out
+of scope, so the roadmap is complete without introducing any accidental
+Chronicle mutation path.
