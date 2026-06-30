@@ -43,6 +43,8 @@ Current metadata includes:
 - `source_match_counts`
 - `overlap_source_record_ids`
 - `insufficiency_reasons`
+- `top_match_source_record_ids`
+- `top_match_sources`
 - `coverage_summary`
 
 ## Evaluation Artifact Alignment
@@ -67,3 +69,8 @@ Rendered markdown trial reports should preserve at least:
 - retrieval source counts
 - overlap source record ids
 - insufficiency reasons when present
+
+Representative-bundle runtime regression should also prove:
+
+- the same query stays comparable across repeated local runs
+- hybrid answers preserve overlap context without hiding graph-only evidence

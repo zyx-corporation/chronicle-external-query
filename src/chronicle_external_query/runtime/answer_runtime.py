@@ -46,6 +46,8 @@ class AnswerRuntime:
             "source_match_counts": retrieval.provenance.source_match_counts,
             "overlap_source_record_ids": list(retrieval.provenance.overlap_source_record_ids),
             "insufficiency_reasons": list(retrieval.provenance.insufficiency_reasons),
+            "top_match_source_record_ids": [match.source_record_id for match in ranked[:3]],
+            "top_match_sources": [match.source for match in ranked[:3]],
             "coverage_summary": self._coverage_summary(retrieval.provenance),
         }
         return RuntimeAnswer(

@@ -16,6 +16,12 @@ FIXTURE_BUNDLE_DIR = (
 VECTOR_FIXTURE_PATH = (
     Path(__file__).resolve().parent / "fixtures" / "vector_matches" / "sample-vector-matches.json"
 )
+REPRESENTATIVE_FIXTURE_BUNDLE_DIR = (
+    Path(__file__).resolve().parent / "fixtures" / "query_engine_bundle" / "representative_cli_bundle"
+)
+REPRESENTATIVE_VECTOR_FIXTURE_PATH = (
+    Path(__file__).resolve().parent / "fixtures" / "vector_matches" / "representative-vector-matches.json"
+)
 
 
 def _run_cli(*args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -118,6 +124,8 @@ def test_validate_bundle_cli_returns_error_for_missing_bundle(tmp_path: Path):
     assert result.returncode == 1
     payload = json.loads(result.stdout)
     assert payload["status"] == "error"
+    assert payload["error_code"] == "bundle_validation.missing_required_file"
+    assert payload["error_category"] == "bundle_validation"
 
 
 def test_validate_bundle_cli_uses_locale_environment_fallback():
@@ -173,6 +181,8 @@ def test_show_artifact_cli_returns_json_error_for_invalid_artifact(tmp_path: Pat
     payload = json.loads(result.stdout)
     assert payload["status"] == "error"
     assert payload["summary"] == "Evaluation artifact loading failed."
+    assert payload["error_code"] == "evaluation_artifact_validation.invalid_artifact"
+    assert payload["error_category"] == "evaluation_artifact_validation"
     assert "evaluation artifact contains invalid JSON" in payload["error"]
 
 
@@ -248,6 +258,8 @@ def test_compare_artifacts_cli_returns_json_error_for_invalid_artifact(tmp_path:
     payload = json.loads(result.stdout)
     assert payload["status"] == "error"
     assert payload["summary"] == "Evaluation artifact comparison failed."
+    assert payload["error_code"] == "evaluation_artifact_validation.invalid_artifact"
+    assert payload["error_category"] == "evaluation_artifact_validation"
     assert "evaluation artifact contains invalid JSON" in payload["error"]
 
 
@@ -441,3 +453,58 @@ def test_run_query_cli_returns_json_error_for_invalid_vector_fixture(tmp_path: P
     assert payload["status"] == "error"
     assert payload["summary"] == "Query execution failed."
     assert "vector fixture must decode to a list" in payload["error"]
+
+
+def test_run_query_cli_representative_hybrid_artifact_is_repeatably_comparable(tmp_path: Path):
+    first_artifact_path = tmp_path / "first-representative-artifact.json"
+    second_artifact_path = tmp_path / "second-representative-artifact.json"
+
+    first = _run_cli(
+        "run-query",
+        str(REPRESENTATIVE_FIXTURE_BUNDLE_DIR),
+        "--query",
+        "release planning follow-up context",
+        "--mode",
+        "hybrid",
+        "--vector-fixture",
+        str(REPRESENTATIVE_VECTOR_FIXTURE_PATH),
+        "--output",
+        str(first_artifact_path),
+        "--json",
+        "--locale",
+        "en",
+    )
+    second = _run_cli(
+        "run-query",
+        str(REPRESENTATIVE_FIXTURE_BUNDLE_DIR),
+        "--query",
+        "release planning follow-up context",
+        "--mode",
+        "hybrid",
+        "--vector-fixture",
+        str(REPRESENTATIVE_VECTOR_FIXTURE_PATH),
+        "--output",
+        str(second_artifact_path),
+        "--json",
+        "--locale",
+        "en",
+    )
+
+    assert first.returncode == 0
+    assert second.returncode == 0
+
+    comparison = _run_cli(
+        "compare-artifacts",
+        str(first_artifact_path),
+        str(second_artifact_path),
+        "--json",
+        "--locale",
+        "en",
+    )
+
+    assert comparison.returncode == 0
+    payload = json.loads(comparison.stdout)
+    assert payload["comparison_summary"]["difference_count"] == 0
+    assert payload["comparison"]["runtime_status_changed"] is False
+    assert payload["comparison"]["retrieval_mode_changed"] is False
+    assert payload["comparison"]["contract_versions_changed"] is False

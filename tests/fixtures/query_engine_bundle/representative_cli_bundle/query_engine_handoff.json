@@ -1,0 +1,117 @@
+{
+  "contract_version": "1.0",
+  "status": "contract_available",
+  "query": "release planning follow-up context",
+  "primary_record_path": ".chronicle/chronicle.jsonl",
+  "graph_export_format": "graph-json",
+  "graph_export_contract_version": "1.0",
+  "graph_incremental_mode": "event-driven_rebuildable",
+  "derived_surfaces": [
+    "graph_export_adapter"
+  ],
+  "referenced_record_ids": [
+    "ctx_release_planning",
+    "ctx_incident_follow_up",
+    "evt_context_release_planning",
+    "evt_context_incident_follow_up"
+  ],
+  "eligible_context_ids": [
+    "ctx_release_planning",
+    "ctx_incident_follow_up"
+  ],
+  "skipped_record_ids": [
+    "evt_context_release_planning",
+    "evt_context_incident_follow_up"
+  ],
+  "source_summaries": [
+    {
+      "source": "vector_index",
+      "hit_count": 0,
+      "unique_identifier_count": 0,
+      "max_score": null
+    },
+    {
+      "source": "graph_export_adapter",
+      "hit_count": 4,
+      "unique_identifier_count": 4,
+      "max_score": 0.65
+    },
+    {
+      "source": "chronicle_search",
+      "hit_count": 0,
+      "unique_identifier_count": 0,
+      "max_score": null
+    }
+  ],
+  "overlap_identifier_count": 0,
+  "package_review_required": true,
+  "primary_record_authoritative": true,
+  "graph_runtime_included": false,
+  "external_query_runtime_included": false,
+  "suggested_commands": [
+    "chronicle graph summary --json",
+    "chronicle export --format graph-json -o graph.json",
+    "chronicle package review --purpose \"runtime query-engine handoff\""
+  ],
+  "prohibited_assumptions": [
+    "no hosted query engine is included",
+    "no graph runtime or vector runtime is included",
+    "no external query execution is implied",
+    "primary Chronicle records remain authoritative"
+  ],
+  "import_validation": {
+    "contract_version": "1.0",
+    "status": "contract_validated",
+    "import_ready": true,
+    "graph_export_available": true,
+    "graph_export_node_count": 8,
+    "graph_export_edge_count": 5,
+    "checks": [
+      {
+        "name": "graph_export_available",
+        "passed": true,
+        "detail": "graph-json export is available for downstream inspection"
+      },
+      {
+        "name": "graph_export_format_matches",
+        "passed": true,
+        "detail": "handoff=graph-json; export=graph-json"
+      },
+      {
+        "name": "graph_contract_version_matches",
+        "passed": true,
+        "detail": "handoff=1.0; export=1.0"
+      },
+      {
+        "name": "incremental_mode_matches",
+        "passed": true,
+        "detail": "handoff=event-driven_rebuildable; export=event-driven_rebuildable"
+      },
+      {
+        "name": "primary_record_matches",
+        "passed": true,
+        "detail": "handoff=.chronicle/chronicle.jsonl; export=.chronicle/chronicle.jsonl"
+      },
+      {
+        "name": "runtime_boundaries_preserved",
+        "passed": true,
+        "detail": "graph export keeps runtime responsibilities outside Chronicle core"
+      },
+      {
+        "name": "referenced_records_present",
+        "passed": true,
+        "detail": "referenced records=4"
+      }
+    ],
+    "notes": [
+      "validation inspects derived graph export compatibility only",
+      "no downstream import or query execution occurs here",
+      "primary Chronicle records remain authoritative over any derived consumer state"
+    ]
+  },
+  "notes": [
+    "downstream query-engine handoff stays derived and read-only",
+    "graph-json export remains rebuildable from Chronicle events",
+    "handoff is advisory until a downstream consumer explicitly imports it"
+  ]
+}

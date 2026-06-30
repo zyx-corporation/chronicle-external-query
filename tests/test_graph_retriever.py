@@ -37,6 +37,34 @@ def test_graph_retriever_prefers_title_over_source_id_only_match():
     assert result.matches[0].metadata["matched_fields"] == {"title": ["graph"]}
 
 
+def test_graph_retriever_deduplicates_source_record_ids_and_exposes_evidence_summary():
+    graph_payload = {
+        "nodes": [
+            {
+                "node_id": "n_event_evt_1",
+                "source_id": "evt_1",
+                "node_type": "event",
+                "title": "Release Planning context added",
+                "summary": "context event",
+            },
+            {
+                "node_id": "n_source_evt_1",
+                "source_id": "evt_1",
+                "node_type": "event",
+                "title": "evt_1",
+                "summary": "",
+            },
+        ],
+        "edges": [],
+    }
+
+    result = GraphRetriever().search(graph_payload, query="release planning context", limit=5)
+
+    assert [match.source_record_id for match in result.matches] == ["evt_1"]
+    assert result.matches[0].metadata["matched_field_count"] >= 1
+    assert "title:release, planning, context" in result.matches[0].metadata["evidence_summary"]
+
+
 def test_graph_retriever_reports_no_match_insufficiency():
     graph_payload = {
         "nodes": [

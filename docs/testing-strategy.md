@@ -54,8 +54,9 @@ Use for representative Chronicle bundle examples:
 - bundle with no retrieval matches
 
 Real Chronicle-generated fixtures should be added as soon as Milestone A
-hardening begins. A sanitized minimal CLI-generated bundle fixture is now part
-of the repository baseline, and additional fixtures should expand from there.
+hardening begins. A sanitized minimal CLI-generated bundle fixture and a more
+representative sanitized CLI-generated bundle fixture are now part of the
+repository baseline, and additional fixtures should expand from there.
 
 ### Retrieval tests
 
@@ -67,6 +68,7 @@ Use for:
 - overlap and vector-only merge behavior
 - stable ordering and tie-breaking rules
 - empty-result handling
+- representative Chronicle-derived bundle regression coverage
 
 ### Runtime tests
 
@@ -76,6 +78,7 @@ Use for:
 - prompt/context assembly
 - result serialization
 - deterministic no-provider fallback behavior
+- representative query regression and repeated-run comparison stability
 
 ### Regression tests
 

@@ -30,6 +30,7 @@ Local evaluation artifacts currently map as follows:
 - `files_reviewed` -> Chronicle trial `files_reviewed`
 - `bundle_summary` -> local-only bundle identity and graph-size context for trial review
 - runtime metadata status -> local approximation of `import_validation_status`
+- runtime metadata retrieval mode and top matches remain local-only review support
 
 ## Boundary Rules
 

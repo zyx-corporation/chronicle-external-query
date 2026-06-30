@@ -21,13 +21,18 @@ pip install -e ".[dev]"
 ## Verify the Baseline
 
 ```bash
-pytest
-chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
-chronicle-external-query show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
-chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --json
-chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --output trial-artifact.json --json
-chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
-chronicle-external-query render-comparison-report trial-artifact.json trial-artifact.json --output comparison-report.md --json
+bash scripts/smoke_clean_checkout.sh
+```
+
+This script creates `.venv` if needed, installs the package in editable mode,
+runs `pytest`, validates the minimal fixture bundle, and exercises a
+representative hybrid query plus markdown report rendering.
+
+If your default `python3` is older than 3.11, set `PYTHON_BIN` explicitly when
+running the script:
+
+```bash
+PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh
 ```
 
 ## Locale Override
@@ -49,4 +54,6 @@ chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/mini
 
 - validation and query execution are local-only
 - default hybrid mode still uses a provider-neutral null vector fallback
+- the representative hybrid smoke path uses only checked-in local vector
+  fixtures, not a hosted provider
 - no Chronicle write-back occurs from this repository

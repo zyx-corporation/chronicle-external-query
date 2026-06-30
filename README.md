@@ -62,6 +62,15 @@ pip install -e ".[dev]"
 pytest
 ```
 
+One-command baseline smoke:
+
+```bash
+bash scripts/smoke_clean_checkout.sh
+```
+
+If your default `python3` is older than 3.11, set `PYTHON_BIN` explicitly, for
+example `PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh`.
+
 ## Local CLI
 
 ```bash
@@ -75,18 +84,12 @@ chronicle-external-query render-comparison-report first-artifact.json second-art
 ## CI Baseline
 
 ```bash
-pytest
-chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
-chronicle-external-query show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
+bash scripts/smoke_clean_checkout.sh
 ```
 
 The same baseline runs in GitHub Actions on pushes and pull requests to `main`.
 
-## Next Milestones
+## Release Status
 
-See [docs/roadmap.md](docs/roadmap.md) for the full sequence.
-
-1. Milestone A: contract ingest hardening against real Chronicle bundles.
-2. Milestone B: retrieval provenance and hybrid expansion.
-3. Milestone C: runtime answering and evaluation loop.
-4. Milestone D: operational packaging and local CLI/CI flow.
+The first supported local downstream runtime baseline is documented in
+[docs/releases/v0.2.0-first-supported-baseline.md](docs/releases/v0.2.0-first-supported-baseline.md).

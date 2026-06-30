@@ -14,13 +14,24 @@ pip install -e ".[dev]"
 Repository CI baseline:
 
 ```bash
-pytest
+bash scripts/smoke_clean_checkout.sh
 ```
 
 GitHub Actions also runs the same baseline on pushes and pull requests to
 `main`.
 
 For a shortest-path fresh clone workflow, see [Clean Checkout](clean-checkout.md).
+
+What the baseline smoke covers:
+
+- editable install from the current checkout
+- full `pytest`
+- minimal bundle validation and inspection
+- representative hybrid query using only checked-in local fixtures
+- markdown trial and comparison report rendering
+
+If the machine's default `python3` is older than 3.11, set `PYTHON_BIN`
+explicitly before running the smoke script.
 
 ## Validate a Bundle
 
@@ -132,5 +143,17 @@ automation can inspect major deltas without reparsing markdown.
 These artifact-validation failures are surfaced consistently across
 `show-artifact`, `compare-artifacts`, `render-artifact-report`, and
 `render-comparison-report`.
+
+Machine-readable JSON failures also include `error_code` and `error_category`.
+Current codes:
+
+- `bundle_validation.missing_required_file`
+- `bundle_validation.invalid_json`
+- `bundle_validation.invalid_bundle_object`
+- `bundle_validation.missing_required_key`
+- `bundle_validation.unsupported_contract_version`
+- `bundle_validation.contract_consistency`
+- `vector_fixture_validation.invalid_fixture`
+- `evaluation_artifact_validation.invalid_artifact`
 
 These failures are validation failures, not partial success.

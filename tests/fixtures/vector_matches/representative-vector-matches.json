@@ -1,0 +1,28 @@
+[
+  {
+    "source": "vector",
+    "identifier": "v_ctx_release_planning",
+    "source_record_id": "ctx_release_planning",
+    "entity_type": "context",
+    "title": "Release Planning",
+    "summary": "vector overlap for representative bundle",
+    "score": 4.0,
+    "matched_terms": ["release", "planning"],
+    "metadata": {
+      "provider": "representative-fixture"
+    }
+  },
+  {
+    "source": "vector",
+    "identifier": "v_evt_follow_up_vector_only",
+    "source_record_id": "evt_follow_up_vector_only",
+    "entity_type": "event",
+    "title": "Follow-up vector-only note",
+    "summary": "vector-only support for representative bundle",
+    "score": 2.5,
+    "matched_terms": ["follow-up"],
+    "metadata": {
+      "provider": "representative-fixture"
+    }
+  }
+]

@@ -85,6 +85,8 @@ class HybridRetriever:
                     "graph_metadata": existing.metadata,
                     "vector_metadata": vector_match.metadata,
                     "overlap_sources": ("graph", "vector"),
+                    "graph_score": existing.score,
+                    "vector_score": vector_match.score,
                 },
             )
 

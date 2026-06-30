@@ -36,6 +36,8 @@ Graph matches currently expose:
 
 - `graph_node_metadata`: raw graph node metadata copied through for inspection
 - `matched_fields`: which graph fields contributed to the score
+- `matched_field_count`: how many retrieval fields contributed to the score
+- `evidence_summary`: compact reviewer-facing summary of the contributing fields
 
 Current weighted field preference:
 
@@ -62,8 +64,16 @@ Chronicle's authority over the underlying source records.
 - `overlap_source_record_ids`
 - `insufficiency_reasons`
 
+Hybrid overlap matches also expose:
+
+- `graph_score`: retained graph-side score before merge
+- `vector_score`: retained vector-side score before merge
+- `overlap_sources`: confirms that the merged result came from both surfaces
+
 ## Boundary Notes
 
 - retrieval scores are downstream interpretation, not Chronicle truth
 - overlap reporting should explain where graph and vector results converge
 - insufficiency reasons should remain explicit instead of pretending success
+- graph retrieval is deduplicated by `source_record_id` so repeated graph nodes
+  for one Chronicle-facing record do not create unstable duplicate matches

@@ -12,6 +12,9 @@ behavior and related ADRs for:
 - import-validation preview
 - local handoff bundle generation
 
+For exact upstream file pointers, see
+[Query-Engine Bundle Contract Source Map](query-engine-bundle-contract-source-map.md).
+
 ## Supported Versions
 
 - bundle manifest contract version: `1.0`

@@ -21,6 +21,8 @@ def test_answer_runtime_returns_prompt_and_metadata():
     assert answer.metadata["retrieval_mode"] == "graph-only"
     assert answer.metadata["match_count"] == 1
     assert answer.metadata["sources"] == ["graph"]
+    assert answer.metadata["top_match_source_record_ids"] == ["evt_1"]
+    assert answer.metadata["top_match_sources"] == ["graph"]
     assert answer.metadata["coverage_summary"]["match_count"] == 1
     assert "Query: chronicle graph" in answer.prompt
     assert answer.graph_matches[0].source_record_id == "evt_1"

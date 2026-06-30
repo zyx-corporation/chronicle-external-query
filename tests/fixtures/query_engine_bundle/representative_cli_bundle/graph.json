@@ -1,0 +1,156 @@
+{
+  "schema_version": "0.3",
+  "generated_at": "2026-06-30T12:13:32+09:00",
+  "chronicle_id": "chr_fixture_representative",
+  "export_manifest": {
+    "schema_version": "0.4",
+    "export_format": "graph-json",
+    "generated_at": "2026-06-30T12:13:32+09:00",
+    "chronicle_id": "chr_fixture_representative",
+    "chronicle_title": "Milestone A Fixture",
+    "tool_name": "chronicle-stack",
+    "tool_version": "sanitized-fixture",
+    "event_count": 3,
+    "export_options": {},
+    "notes": [
+      "This manifest is provenance metadata, not cryptographic proof.",
+      "Export outputs are derived views; chronicle.jsonl remains primary."
+    ]
+  },
+  "export_contract": {
+    "contract_version": "1.0",
+    "export_family": "graph-json",
+    "primary_record": ".chronicle/chronicle.jsonl",
+    "derived_only": true,
+    "deterministic": true,
+    "mutates_primary_record": false,
+    "external_runtime_required": false,
+    "graph_runtime_included": false,
+    "incremental_source": "chronicle_events",
+    "incremental_mode": "event-driven_rebuildable",
+    "incremental_checkpoint_field": "event_id",
+    "incremental_ordering_field": "timestamp",
+    "incremental_expectations": [
+      "new Chronicle events may add or supersede derived nodes and edges",
+      "consumers may checkpoint by event_id while preserving Chronicle event ordering",
+      "full graph state must remain rebuildable from the primary JSONL without external storage",
+      "tombstone and seal lifecycle markers may remove or annotate derived graph entities on rebuild"
+    ],
+    "authority_note": "Graph export remains derived and non-authoritative; Chronicle primary records stay authoritative."
+  },
+  "nodes": [
+    {
+      "node_id": "n_chronicle_chr_fixture_representative",
+      "node_type": "chronicle",
+      "source_id": "chr_fixture_representative",
+      "title": "Milestone A Fixture",
+      "summary": "",
+      "metadata": {}
+    },
+    {
+      "node_id": "n_context_ctx_release_planning",
+      "node_type": "context",
+      "source_id": "ctx_release_planning",
+      "title": "Release Planning",
+      "summary": "Representative release planning notes for downstream query-engine bundle validation.",
+      "metadata": {
+        "scope": "project",
+        "visibility": "unknown"
+      }
+    },
+    {
+      "node_id": "n_context_ctx_incident_follow_up",
+      "node_type": "context",
+      "source_id": "ctx_incident_follow_up",
+      "title": "Incident Follow-up",
+      "summary": "Operational follow-up context to ensure multiple graph nodes are present.",
+      "metadata": {
+        "scope": "project",
+        "visibility": "unknown"
+      }
+    },
+    {
+      "node_id": "n_event_evt_chronicle_created",
+      "node_type": "event",
+      "source_id": "evt_chronicle_created",
+      "title": "Milestone A Fixture created",
+      "summary": "chronicle_created",
+      "metadata": {}
+    },
+    {
+      "node_id": "n_event_evt_context_release_planning",
+      "node_type": "event",
+      "source_id": "evt_context_release_planning",
+      "title": "Context added: Release Planning",
+      "summary": "context_added",
+      "metadata": {}
+    },
+    {
+      "node_id": "n_event_evt_context_incident_follow_up",
+      "node_type": "event",
+      "source_id": "evt_context_incident_follow_up",
+      "title": "Context added: Incident Follow-up",
+      "summary": "context_added",
+      "metadata": {}
+    },
+    {
+      "node_id": "n_source_provenance_ctx_release_planning",
+      "node_type": "source_provenance",
+      "source_id": "ctx_release_planning",
+      "title": "conversation",
+      "summary": "",
+      "metadata": {
+        "tool": "",
+        "session": ""
+      }
+    },
+    {
+      "node_id": "n_source_provenance_ctx_incident_follow_up",
+      "node_type": "source_provenance",
+      "source_id": "ctx_incident_follow_up",
+      "title": "conversation",
+      "summary": "",
+      "metadata": {
+        "tool": "",
+        "session": ""
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e_chronicle_has_event_n_chronicle_chr_fixture_representative_n_event_evt_chronicle_created",
+      "edge_type": "chronicle_has_event",
+      "from_node_id": "n_chronicle_chr_fixture_representative",
+      "to_node_id": "n_event_evt_chronicle_created",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_chronicle_has_event_n_chronicle_chr_fixture_representative_n_event_evt_context_release_planning",
+      "edge_type": "chronicle_has_event",
+      "from_node_id": "n_chronicle_chr_fixture_representative",
+      "to_node_id": "n_event_evt_context_release_planning",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_chronicle_has_event_n_chronicle_chr_fixture_representative_n_event_evt_context_incident_follow_up",
+      "edge_type": "chronicle_has_event",
+      "from_node_id": "n_chronicle_chr_fixture_representative",
+      "to_node_id": "n_event_evt_context_incident_follow_up",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_context_has_source_n_context_ctx_release_planning_n_source_provenance_ctx_release_planning",
+      "edge_type": "context_has_source",
+      "from_node_id": "n_context_ctx_release_planning",
+      "to_node_id": "n_source_provenance_ctx_release_planning",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_context_has_source_n_context_ctx_incident_follow_up_n_source_provenance_ctx_incident_follow_up",
+      "edge_type": "context_has_source",
+      "from_node_id": "n_context_ctx_incident_follow_up",
+      "to_node_id": "n_source_provenance_ctx_incident_follow_up",
+      "metadata": {}
+    }
+  ]
+}

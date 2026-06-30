@@ -1,7 +1,8 @@
 # Roadmap
 
-This roadmap records the recommended sequencing for `chronicle-external-query`
-as a downstream derived consumer of Chronicle Stack.
+This roadmap defines the path from the current working scaffold to an
+operator-ready first completion state for `chronicle-external-query` as a
+downstream derived consumer of Chronicle Stack.
 
 ## Guiding Boundary
 
@@ -10,213 +11,146 @@ as a downstream derived consumer of Chronicle Stack.
 - hosted query runtime, graph runtime, and vector runtime concerns live here
 - no implicit write-back into Chronicle primary records is allowed
 
+## What Completion Means
+
+For this repository, "complete" does not mean feature exhaustion. It means the
+first supported downstream runtime baseline is in place and can be handed to
+another operator without tribal knowledge.
+
+Completion for the current phase requires:
+
+- a real or sanitized Chronicle handoff bundle can be validated locally
+- graph and hybrid retrieval both produce reviewable provenance
+- runtime answers and saved artifacts remain comparable across repeated runs
+- a clean checkout can install, validate a bundle, run a query, and render
+  reports from documented commands
+- CI enforces the same local-first baseline that operators are expected to run
+
 ## Current Position
 
-The repository currently has a working early scaffold for:
+The repository already has a substantial working baseline:
 
-- Chronicle handoff bundle loading
-- required-file and contract-version validation
-- graph export loading
-- graph-only and hybrid retrieval provenance scaffolding
+- bundle ingest validation for required files, required keys, and contract
+  versions
+- graph export loading plus graph-only and hybrid retrieval scaffolding
 - provider-neutral local vector fixtures for deterministic hybrid evaluation
-- answer composition, result serialization, and markdown trial-report rendering
-- local CLI entrypoints for bundle validation, bundle inspection, query execution,
-  artifact comparison, and artifact report rendering
+- runtime answer assembly, evaluation artifact serialization, and markdown
+  report rendering
+- local CLI entrypoints for validation, bundle inspection, query execution,
+  artifact inspection, artifact comparison, and report rendering
+- CI smoke coverage for tests, validation, bundle inspection, graph queries,
+  hybrid fixture-backed queries, and markdown report generation
 
-This means Milestone A is underway with real bundle fixtures and validation
-coverage in place, and Milestone B has started its shared provenance contract
-work. Milestone C has entered local evaluation artifact shaping, and Milestone D
-now has a broader standalone CLI surface plus CI smoke coverage for validation,
-bundle inspection, graph queries, and hybrid fixture-backed queries.
+This means the repo is past pure bootstrap. The remaining work is mostly
+closure work: proving the baseline against representative Chronicle output,
+tightening acceptance evidence, and closing the gap between "implemented" and
+"ready to hand off."
 
 ## Milestone Sequence
 
 ### Milestone A: Contract Ingest Hardening
 
+Status:
+Complete for the first supported baseline. Representative sanitized Chronicle
+bundle fixtures, traceable contract references, and drift-focused regression
+coverage are now in place.
+
 Goal:
 Make Chronicle handoff bundles safe and explicit to ingest before retrieval or
 runtime work expands.
 
-Scope:
+Already in place:
 
-- validate bundle structure against required files and object shapes
-- add contract version checks for `query_engine_handoff.json` and `graph.json`
-- vendor or reference Chronicle-side schema and contract notes under `contracts/`
-- add fixture bundles captured from real Chronicle output
-- expose clear import-validation errors for contract drift
+- required-file validation for bundle contents
+- required-key and top-level object-shape validation
+- contract-version validation for manifest, handoff, graph, and adapter payloads
+- import-validation error taxonomy for machine-readable CLI failures
+- fixture-driven ingest tests with malformed and mismatch coverage
 
-Detailed Work Packages:
+Remaining work:
 
-1. Fixture capture and reduction
-   - collect one or more real Chronicle-generated bundle examples
-   - reduce or sanitize fixtures so they can live in-repo
-   - document fixture provenance and known limitations
-2. Structural validation hardening
-   - validate top-level object shapes for manifest, handoff, and graph payloads
-   - detect missing required keys and incompatible types
-   - standardize import-validation error categories
-3. Version and compatibility checks
-   - compare handoff contract version against supported versions
-   - compare graph export version against supported versions
-   - define unsupported-version behavior and messaging
-4. Contract reference material
-   - vendor stable schema fragments or contract notes under `contracts/chronicle/`
-   - link each validation rule back to its Chronicle-side contract source
-5. Test expansion
-   - add fixture-driven contract tests
-   - cover malformed JSON, missing files, missing keys, and version drift
-
-Deliverables:
-
-- real or sanitized Chronicle bundle fixtures
-- explicit import-validation rules and error taxonomy
-- contract/version validation in the ingest path
-- contract tests proving drift detection
+1. expand fixture variety only when Chronicle-side contract shape changes
+2. add new drift tests only when future contract revisions reveal new failure modes
 
 Exit Criteria:
 
-- real Chronicle bundle fixtures load locally
-- contract mismatch fails fast with readable error output
-- test coverage proves missing-file, malformed-json, and version-drift behavior
-
-Dependencies:
-
-- Chronicle-side handoff and graph export contracts remain inspectable
-- at least one representative bundle can be captured from Chronicle output
-
-Risks:
-
-- overfitting validation to a single fixture bundle
-- baking unstable Chronicle-side details into this repo too early
+- at least one representative real Chronicle bundle fixture loads locally
+- contract drift fails fast with readable and machine-readable output
+- ingest validation rules are traceable to Chronicle-side contract material
 
 Definition of Done:
 
-- a new contributor can run fixture-based validation locally and understand why a
-  bundle fails without reading the code first
+- a new contributor can validate a representative bundle and understand why it
+  fails without reading the code first
 
 ### Milestone B: Retrieval Provenance and Hybrid Expansion
+
+Status:
+Complete for the first supported baseline. Shared provenance, hybrid
+composition, provider-neutral vector seams, and representative-bundle
+regression coverage are now in place.
 
 Goal:
 Move from graph-only scaffolding to retrieval flows that are useful for real
 local evaluation and downstream runtime comparison.
 
-Scope:
+Already in place:
 
-- enrich graph retrieval scoring and matched-node metadata
-- add retrieval provenance summaries to every query result
-- define a vector-retrieval adapter interface without binding to a single vendor
-- compose graph and vector retrieval into a stable hybrid read path
-- add evaluation fixtures for overlap, insufficiency, and empty-result cases
+- shared retrieval provenance payload used across graph and hybrid paths
+- graph retrieval with scoring and ordering behavior
+- provider-neutral vector adapter seam with deterministic local fixture loading
+- hybrid retrieval composition with overlap handling
+- regression coverage for retrieval fixtures and provenance preservation
 
-Detailed Work Packages:
+Remaining work:
 
-1. Provenance contract design
-   - define a shared retrieval result payload used by graph-only and hybrid paths
-   - separate source-authored identifiers from downstream-derived scores
-   - define insufficiency and no-match markers
-2. Graph retrieval hardening
-   - improve graph matching heuristics and tie-breaking rules
-   - expose matched-node metadata and evidence summary fields
-   - make scoring behavior testable and documented
-3. Vector adapter seam
-   - define a provider-neutral vector retrieval interface
-   - support a no-provider local fallback for deterministic tests
-   - document what is adapter responsibility vs runtime responsibility
-4. Hybrid composition
-   - merge graph and vector matches into one stable payload
-   - define overlap, supplement, and empty-result handling
-   - preserve mode-specific provenance
-5. Retrieval evaluation fixtures
-   - create deterministic cases for graph-only, hybrid, overlap, and no-match
-   - add regression tests for provenance loss or ordering drift
-
-Deliverables:
-
-- structured retrieval provenance payload
-- hardened graph retriever behavior
-- vector adapter interface and local fallback
-- hybrid retrieval result contract
-- retrieval-focused fixtures and regression tests
+1. expand retrieval fixtures only when Chronicle-side bundle shape or review
+   needs change
+2. refine scoring heuristics only when future acceptance runs reveal a concrete
+   comparison problem
 
 Exit Criteria:
 
-- graph-only and hybrid retrieval both return structured provenance
-- retrieval outputs are stable enough to compare across repeated runs
-- tests cover graph-only, hybrid, and no-match scenarios
-
-Dependencies:
-
-- Milestone A validation path is stable enough to trust input bundles
-- a retrieval provenance contract is accepted before hybrid logic expands
-
-Risks:
-
-- hiding provider assumptions inside a supposedly neutral vector interface
-- returning scores without enough provenance context to interpret them safely
+- graph-only and hybrid outputs are stable enough to compare across runs
+- provenance clearly distinguishes Chronicle-derived context from downstream
+  scoring and merge behavior
+- retrieval behavior has been reviewed against representative bundle content
 
 Definition of Done:
 
-- retrieval payloads can be inspected by humans and compared by tests without
-  guessing which fields came from Chronicle exports and which came from the
-  downstream runtime
+- retrieval payloads can be inspected by a reviewer without guessing which
+  fields are source-authored and which are downstream-derived
 
 ### Milestone C: Runtime Answering and Evaluation Loop
+
+Status:
+Complete for the first supported baseline. Runtime answer contracts, local
+evaluation artifacts, Chronicle-aligned review mapping, and representative-query
+regression coverage are now in place.
 
 Goal:
 Turn retrieval output into repeatable runtime answers and reviewable evaluation
 artifacts.
 
-Scope:
+Already in place:
 
-- add answer composition beyond prompt scaffolding
-- define runtime response metadata for traceability
-- serialize evaluation artifacts for trial runs
-- compare runtime outcomes across queries and bundle versions
-- align output shape with Chronicle-side trial review expectations
+- runtime answer contract and metadata model
+- structured answer assembly with insufficiency handling
+- evaluation artifact serialization and comparison support
+- Chronicle trial alignment mapping for local downstream review
+- markdown trial and comparison report rendering
 
-Detailed Work Packages:
+Remaining work:
 
-1. Runtime response contract
-   - define answer payload fields, metadata fields, and provenance attachment
-   - distinguish query execution mode, retrieval coverage, and uncertainty state
-2. Answer composition
-   - move from prompt scaffolding to structured answer assembly
-   - keep no-provider fallback deterministic where possible
-   - preserve the difference between answer text and runtime metadata
-3. Evaluation artifact shape
-   - serialize local trial outputs in a stable reviewable format
-   - include bundle identity, query, retrieval mode, and insufficiency markers
-   - define how repeated runs are compared
-4. Chronicle alignment
-   - map local evaluation artifacts to Chronicle-side trial review expectations
-   - avoid implying that local evaluation equals Chronicle acceptance
-5. Runtime regression coverage
-   - add tests for no-match, partial-match, and repeated-run behavior
-   - add tests for metadata stability and insufficiency wording
-
-Deliverables:
-
-- stable runtime answer contract
-- structured evaluation artifact format
-- comparison-ready local trial outputs
-- runtime metadata and insufficiency tests
+1. expand runtime regression fixtures only when future acceptance runs expose a
+   concrete comparison problem
+2. refine wording only when operator review needs change materially
 
 Exit Criteria:
 
-- runtime answers include query, provenance, and response metadata
-- trial outputs can be saved and reviewed locally
-- evaluation tests cover repeated-run stability and insufficiency reporting
-
-Dependencies:
-
-- Milestone B retrieval payload is stable enough to feed answer composition
-- wording boundaries from the i18n strategy are respected in operator-facing
-  outputs
-
-Risks:
-
-- collapsing runtime inference and source provenance into one output layer
-- producing evaluation artifacts that are hard to compare across runs
+- runtime answers include query, provenance, and reviewable metadata
+- local trial artifacts can be saved, inspected, compared, and rendered
+- repeated-run behavior is stable enough for downstream review use
 
 Definition of Done:
 
@@ -224,86 +158,81 @@ Definition of Done:
 
 ### Milestone D: Operational Packaging
 
+Status:
+Complete for the first supported baseline. A reproducible clean-checkout smoke
+path, CI baseline, and operator documentation now point at the same local-only
+verification flow.
+
 Goal:
 Make the repository easy to run, validate, and iterate on as a standalone
 runtime implementation surface.
 
-Scope:
+Already in place:
 
-- add local CLI entrypoints for bundle validation and query execution
-- define CI checks for tests and contract fixtures
-- document environment configuration and optional provider integration points
-- add example workflows for local-only evaluation runs
+- public local CLI commands for validation, inspection, queries, and reports
+- CI workflow covering tests and CLI smoke paths
+- operator runbook, clean-checkout guide, and supporting docs
+- deterministic local validation paths that do not require a hosted provider
 
-Detailed Work Packages:
+Remaining work:
 
-1. CLI surface
-   - add commands for bundle validation and query execution
-   - define operator-facing argument and exit-code behavior
-   - keep locale and provider options explicit
-2. CI and automation
-   - run tests on every PR
-   - add contract-fixture verification to CI
-   - optionally gate provider-specific tests behind explicit markers
-3. Operator documentation
-   - document environment variables and optional provider setup
-   - add end-to-end local run examples
-   - document expected outputs and failure modes
-4. Packaging and reproducibility
-   - make a fresh checkout installable and runnable from documented steps
-   - ensure deterministic local validation paths remain available without a
-     hosted provider
-
-Deliverables:
-
-- public local CLI commands
-- CI workflow covering tests and contract checks
-- operator runbook for validation and query execution
-- reproducible setup instructions from clean checkout
+1. expand the smoke path only when new supported operator flows are added
+2. document provider-backed paths separately if they ever become first-class
+   supported options
 
 Exit Criteria:
 
-- a new checkout can validate a bundle and run a query from documented commands
-- CI verifies the main contract and test path
-- local operator setup is documented end to end
-
-Dependencies:
-
-- Milestones A-C have stabilized the contracts those commands expose
-
-Risks:
-
-- exposing a CLI before contract and wording boundaries are stable
-- making provider-backed flows the only realistic way to validate the repo
+- a new checkout can install, validate a bundle, run a query, and render
+  reports from documented commands
+- CI verifies the same baseline path operators are expected to use
+- operator setup no longer depends on repo-specific tribal knowledge
 
 Definition of Done:
 
-- an operator can clone the repo, install it, validate a bundle, and run at
-  least one local query path without tribal knowledge
+- an operator can clone the repo and complete the documented local-only flow
+  without guesswork
 
-## Recommended Execution Order
+### Milestone E: Completion and First Supported Trial Baseline
 
-1. Finish Milestone A before taking any provider-specific runtime dependency.
-2. Use Milestone B to stabilize retrieval semantics and provenance.
-3. Build Milestone C only after retrieval outputs are trustworthy enough to
-   compare across runs.
-4. Use Milestone D to package the validated behavior without changing the
-   Chronicle boundary.
+Status:
+Complete for the first supported baseline. Completion evidence, deferrals, and
+the release-ready handoff summary are now in place.
 
-## Near-Term Focus
+Goal:
+Declare the first supported completion state for `chronicle-external-query`
+without weakening the Chronicle boundary.
 
-The next safe slice is:
+Scope:
 
-1. capture one or more real Chronicle bundle fixtures
-2. add explicit contract-version validation
-3. define the retrieval provenance payload that Milestones B and C will share
+- close or explicitly defer remaining A-D gaps
+- run the documented path against representative Chronicle output
+- capture acceptance evidence for validation, retrieval, runtime, and reporting
+- confirm clean-checkout reproducibility and CI parity
+- prepare a first release-ready handoff summary
 
-## Suggested Issue Breakdown
+Deliverables:
 
-Recommended first issue set:
+- completion checklist with pass/fail evidence
+- representative-bundle acceptance run notes
+- explicit defer list for anything intentionally left out of the first baseline
+- release or handoff summary that states the supported local-first boundary
 
-1. `Milestone A`: add sanitized real-bundle fixtures and fixture-loading tests
-2. `Milestone A`: implement handoff/graph/manifest version validation
-3. `Milestone A`: define import-validation error taxonomy
-4. `Milestone B`: define retrieval provenance payload contract
-5. `Milestone B`: harden graph retrieval scoring and ordering behavior
+Exit Criteria:
+
+- all blocking A-D work is closed or explicitly deferred
+- representative Chronicle bundles pass the supported local workflow
+- local verification and CI agree on the same supported baseline
+- another operator can understand the supported scope from repo docs alone
+
+Definition of Done:
+
+- this repository can be handed off as the first supported local downstream
+  runtime baseline for Chronicle-derived bundles
+
+## Completion Artifacts
+
+Release-closeout artifacts for the first supported baseline:
+
+- [v0.2.0 Completion Checklist](releases/v0.2.0-completion-checklist.md)
+- [v0.2.0 Deferred Items](releases/v0.2.0-defer-list.md)
+- [v0.2.0 First Supported Baseline](releases/v0.2.0-first-supported-baseline.md)

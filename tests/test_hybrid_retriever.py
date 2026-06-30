@@ -71,6 +71,8 @@ def test_hybrid_retriever_marks_overlap_and_source_counts():
     assert result.provenance.overlap_source_record_ids == ("evt_1",)
     assert [match.source_record_id for match in result.matches] == ["evt_1", "evt_3"]
     assert result.matches[0].source == "hybrid_overlap"
+    assert result.matches[0].metadata["graph_score"] >= result.matches[0].metadata["vector_score"]
+    assert result.matches[0].metadata["overlap_sources"] == ("graph", "vector")
 
 
 def test_hybrid_retriever_preserves_vector_only_results():

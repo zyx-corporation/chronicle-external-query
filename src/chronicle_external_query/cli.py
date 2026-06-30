@@ -46,7 +46,7 @@ def main() -> int:
         return _emit_error(
             summary_key=_failure_summary_key(args.command),
             locale=locale,
-            error=str(exc),
+            error=exc,
             as_json=args.json,
         )
 
@@ -275,11 +275,13 @@ def _render_comparison_report(*, args: argparse.Namespace, locale: str) -> int:
     return _emit_result(payload=payload, as_json=args.json)
 
 
-def _emit_error(*, summary_key: str, locale: str, error: str, as_json: bool) -> int:
+def _emit_error(*, summary_key: str, locale: str, error: ImportValidationError, as_json: bool) -> int:
     payload = {
         "status": "error",
         "summary": message(summary_key, locale=locale),
-        "error": error,
+        "error": str(error),
+        "error_code": error.error_code,
+        "error_category": error.error_category,
     }
     return _emit_result(payload=payload, as_json=as_json, exit_code=1)
 
