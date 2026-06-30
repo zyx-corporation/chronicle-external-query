@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from importlib import import_module
-from typing import Callable
 
 from .contracts import (
     ProviderPluginLoadError,
@@ -13,6 +12,7 @@ from .contracts import (
 
 
 BUILTIN_PROVIDER_PLUGIN_MODULES: dict[str, str] = {
+    "gemma4": "chronicle_external_query.plugins.providers.gemma4_local",
     "static-test-provider": "chronicle_external_query.plugins.providers.static_test_provider",
 }
 

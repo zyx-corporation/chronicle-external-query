@@ -5,9 +5,11 @@ import os
 import subprocess
 import sys
 import sysconfig
+import threading
 from pathlib import Path
 from shutil import which
 import site
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
 FIXTURE_BUNDLE_DIR = (
@@ -153,10 +155,124 @@ def test_list_plugins_cli_returns_provider_plugin_registry():
     assert result.returncode == 0
     payload = json.loads(result.stdout)
     assert payload["status"] == "plugins_loaded"
-    assert payload["plugin_count"] == 1
-    assert payload["plugins"][0]["plugin_name"] == "static-test-provider"
+    assert payload["plugin_count"] == 2
+    assert payload["plugins"][0]["plugin_name"] == "gemma4"
+    assert payload["plugins"][1]["plugin_name"] == "static-test-provider"
     assert payload["plugins"][0]["available"] is False
-    assert payload["plugins"][0]["metadata"]["credential_mode"] == "env_only"
+    assert payload["plugins"][0]["metadata"]["supports_answer_generation"] is True
+
+
+def test_run_query_cli_accepts_gemma4_answer_plugin(tmp_path: Path):
+    output_path = tmp_path / "artifact.json"
+    server = _start_json_server(
+        response_body={
+            "choices": [
+                {
+                    "message": {
+                        "content": "gemma4 local answer",
+                    }
+                }
+            ]
+        }
+    )
+
+    try:
+        result = _run_cli(
+            "run-query",
+            str(FIXTURE_BUNDLE_DIR),
+            "--query",
+            "fixture bundle",
+            "--mode",
+            "graph",
+            "--answer-plugin",
+            "gemma4",
+            "--output",
+            str(output_path),
+            "--json",
+            "--locale",
+            "en",
+            env={
+                "GEMMA4_ENABLED": "true",
+                "GEMMA4_BASE_URL": server.base_url,
+                "GEMMA4_MODEL": "gemma4",
+            },
+        )
+    finally:
+        server.shutdown()
+        server.thread.join(timeout=5)
+        server.server_close()
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["answer_plugin"] == "gemma4"
+    assert payload["answer_text"] == "gemma4 local answer"
+    assert payload["metadata"]["answer_generator"] == "gemma4"
+    assert output_path.exists()
+
+
+def test_run_query_cli_returns_error_when_gemma4_plugin_is_not_configured():
+    result = _run_cli(
+        "run-query",
+        str(FIXTURE_BUNDLE_DIR),
+        "--query",
+        "fixture bundle",
+        "--mode",
+        "graph",
+        "--answer-plugin",
+        "gemma4",
+        "--json",
+        "--locale",
+        "en",
+        env={
+            "GEMMA4_ENABLED": "false",
+        },
+    )
+
+    assert result.returncode == 1
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "error"
+    assert payload["error_category"] == "provider_plugin"
+    assert "GEMMA4_ENABLED is not enabled" in payload["error"]
+
+
+class _JsonHandler(BaseHTTPRequestHandler):
+    response_body = b"{}"
+
+    def do_POST(self):  # noqa: N802
+        content_length = int(self.headers.get("Content-Length", "0"))
+        _ = self.rfile.read(content_length)
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(self.response_body)
+
+    def log_message(self, format, *args):  # noqa: A003
+        return
+
+
+class _ServerHandle:
+    def __init__(self, httpd: ThreadingHTTPServer, thread: threading.Thread) -> None:
+        self.httpd = httpd
+        self.thread = thread
+        self.base_url = f"http://127.0.0.1:{httpd.server_address[1]}"
+
+    def shutdown(self) -> None:
+        self.httpd.shutdown()
+
+    def server_close(self) -> None:
+        self.httpd.server_close()
+
+
+def _start_json_server(*, response_body: dict[str, object]) -> _ServerHandle:
+    handler = type(
+        "TestJsonHandler",
+        (_JsonHandler,),
+        {"response_body": json.dumps(response_body).encode("utf-8")},
+    )
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    return _ServerHandle(httpd=httpd, thread=thread)
 
 
 def test_run_query_cli_can_write_artifact(tmp_path: Path):

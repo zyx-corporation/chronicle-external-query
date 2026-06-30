@@ -63,6 +63,8 @@ This repository currently provides:
   manifest-driven fixture packs
 - an explicit provider plugin registry with env-only credential discovery and
   opt-in provider test isolation
+- a local `gemma4` answer plugin that stays opt-in and preserves the baseline
+  runtime path when not requested
 
 ## Repository Layout
 
@@ -121,6 +123,7 @@ chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
 chronicle-external-query list-plugins --json
+chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
@@ -185,12 +188,50 @@ Current built-in provider seam:
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
 - optional endpoint override:
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_ENDPOINT`
-- runtime integration remains disabled until Milestone H
+- runtime integration remains reserved-only
 
 Opt-in provider tests:
 
 ```bash
 pytest --run-provider-plugins tests/providers/
+```
+
+## Local Gemma4 Plugin
+
+Milestone H adds the first real answer-generation plugin while keeping the
+deterministic runtime as the default.
+
+- plugin name: `gemma4`
+- CLI activation: `--answer-plugin gemma4`
+- local runtime expectation: OpenAI-compatible `POST /v1/chat/completions`
+- default path: unchanged when `--answer-plugin` is omitted
+- failure mode: explicit plugin error when requested but not configured or not
+  reachable
+
+Required environment:
+
+- `GEMMA4_ENABLED=true`
+- `GEMMA4_BASE_URL=http://127.0.0.1:11434`
+- `GEMMA4_MODEL=gemma4`
+
+Optional environment:
+
+- `GEMMA4_TIMEOUT=30`
+- `GEMMA4_API_KEY=...`
+
+Example:
+
+```bash
+GEMMA4_ENABLED=true \
+GEMMA4_BASE_URL=http://127.0.0.1:11434 \
+GEMMA4_MODEL=gemma4 \
+chronicle-external-query run-query tests/fixtures/query_engine_bundle/representative_cli_bundle --query "release planning follow-up context" --mode hybrid --vector-fixture tests/fixtures/vector_matches/representative-vector-matches.json --answer-plugin gemma4 --json
+```
+
+Opt-in gemma4 tests:
+
+```bash
+pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py
 ```
 
 ## CI Baseline
@@ -213,3 +254,7 @@ remain pinned to committed baseline fixtures.
 Milestone G is also implemented locally: provider plugin registration,
 credential isolation, and opt-in provider test gating are now in place without
 changing the supported baseline runtime path.
+
+Milestone H is now implemented locally as well: `gemma4` can be requested as a
+local answer plugin, while the supported baseline remains deterministic and
+provider-free by default.

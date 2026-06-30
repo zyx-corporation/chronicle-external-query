@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+from chronicle_external_query.runtime.contracts import AnswerGeneratorProtocol
+
 
 @dataclass(frozen=True)
 class ProviderConfigurationField:
@@ -40,6 +42,9 @@ class ProviderPluginProtocol(Protocol):
     def describe_status(self) -> ProviderPluginStatus:
         ...
 
+    def build_answer_generator(self) -> AnswerGeneratorProtocol:
+        ...
+
 
 class ProviderPluginError(ValueError):
     """Raised when provider plugin loading or configuration fails."""
@@ -51,3 +56,7 @@ class ProviderPluginLoadError(ProviderPluginError):
 
 class ProviderPluginNotFoundError(ProviderPluginLoadError):
     """Raised when an unknown provider plugin is requested."""
+
+
+class ProviderPluginUnavailableError(ProviderPluginError):
+    """Raised when a requested provider plugin is not configured for use."""

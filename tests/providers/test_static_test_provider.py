@@ -21,4 +21,4 @@ def test_static_test_provider_becomes_available_when_credential_env_is_present(m
     assert status.available is True
     assert status.availability_reason == "configured"
     assert status.config_fields[0].secret is True
-    assert status.metadata["runtime_integration"] == "not_enabled_until_milestone_h"
+    assert status.metadata["runtime_integration"] == "reserved_only"

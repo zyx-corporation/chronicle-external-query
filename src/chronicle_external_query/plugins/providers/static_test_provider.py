@@ -6,8 +6,10 @@ from dataclasses import dataclass
 from chronicle_external_query.plugins.contracts import (
     ProviderConfigurationField,
     ProviderPluginProtocol,
+    ProviderPluginUnavailableError,
     ProviderPluginStatus,
 )
+from chronicle_external_query.runtime.contracts import AnswerGeneratorProtocol
 
 
 API_KEY_ENV_VAR = "CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY"
@@ -48,7 +50,7 @@ class StaticTestProviderPlugin(ProviderPluginProtocol):
         return {
             "credential_mode": "env_only",
             "provider_family": "test_provider",
-            "runtime_integration": "not_enabled_until_milestone_h",
+            "runtime_integration": "reserved_only",
         }
 
     def describe_status(self) -> ProviderPluginStatus:
@@ -58,6 +60,11 @@ class StaticTestProviderPlugin(ProviderPluginProtocol):
             availability_reason=self.availability_reason(),
             config_fields=self.describe_configuration(),
             metadata=self.describe_metadata(),
+        )
+
+    def build_answer_generator(self) -> AnswerGeneratorProtocol:
+        raise ProviderPluginUnavailableError(
+            f"{self.plugin_name} does not provide answer generation in Milestone H"
         )
 
 

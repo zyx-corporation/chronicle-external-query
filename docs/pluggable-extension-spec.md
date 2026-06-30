@@ -88,6 +88,12 @@ Implemented manifest shape:
 
 ### 2. Answer Generator Protocol
 
+Current implementation status:
+Milestone H is now implemented for the first local answer generator. The
+repository ships `GeneratedAnswer`, `AnswerGeneratorProtocol`, an opt-in answer
+generator seam in `AnswerRuntime`, and a local `gemma4` plugin that uses an
+OpenAI-compatible chat-completions endpoint.
+
 Purpose:
 Allow local `gemma4` or other future LLM-backed answer generation without
 replacing the current deterministic answer builder.
@@ -104,6 +110,7 @@ class AnswerGeneratorProtocol(Protocol):
         query: str,
         matches: list[RetrievalMatch],
         provenance: RetrievalProvenance,
+        prompt: str,
     ) -> "GeneratedAnswer":
         ...
 ```
@@ -129,7 +136,7 @@ Milestone G is now implemented for provider plugin registration and credential
 isolation. The repository ships `chronicle_external_query.plugins`, an explicit
 provider plugin loader, `list-plugins`, and plugin-specific environment-variable
 configuration reporting. Runtime answer generation remains on the deterministic
-built-in path until Milestone H.
+built-in path unless an explicit plugin is requested.
 
 Purpose:
 Load optional provider-backed runtime or evaluation adapters with explicit
@@ -156,13 +163,20 @@ Provider-specific runtime plugins may also implement:
 
 Current built-in registry entry:
 
+- `gemma4`
+- required env vars:
+  `GEMMA4_ENABLED`, `GEMMA4_BASE_URL`, `GEMMA4_MODEL`
+- optional env vars:
+  `GEMMA4_TIMEOUT`, `GEMMA4_API_KEY`
+- runtime integration:
+  active for opt-in answer generation
 - `static-test-provider`
 - required credential env var:
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
 - optional endpoint env var:
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_ENDPOINT`
 - runtime integration:
-  reserved only, not active before Milestone H
+  reserved only
 
 ## Proposed Package Layout
 
@@ -249,6 +263,7 @@ Suggested separation:
 - `pytest --run-gemma4`
 - `pytest --run-provider-plugins tests/providers/`
 - `pytest --run-hosted-providers -m hosted_provider`
+- `pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py`
 
 Suggested markers:
 

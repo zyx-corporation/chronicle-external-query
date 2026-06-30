@@ -28,6 +28,7 @@ English README: [README.md](README.md)
 - committed baseline fixture と optional fixture pack を分離する
   pluggable fixture registry
 - env-only credential discovery と opt-in test 分離を持つ provider plugin registry
+- opt-in でだけ動作する local `gemma4` answer plugin
 
 ## Repository Layout
 
@@ -90,6 +91,7 @@ chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
 chronicle-external-query list-plugins --json
+chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
@@ -131,12 +133,49 @@ supported baseline に混ぜていません。
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
 - optional endpoint override:
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_ENDPOINT`
-- runtime への実接続は Milestone H まで無効
+- runtime への実接続は引き続き reserved-only
 
 opt-in provider test:
 
 ```bash
 pytest --run-provider-plugins tests/providers/
+```
+
+## Local Gemma4 Plugin
+
+Milestone H では、最初の実 answer-generation plugin として local `gemma4`
+を追加しました。ただし deterministic baseline はデフォルトのまま残します。
+
+- plugin 名: `gemma4`
+- CLI 有効化: `--answer-plugin gemma4`
+- 想定 runtime: OpenAI-compatible な `POST /v1/chat/completions`
+- デフォルト path: `--answer-plugin` を省略した場合は従来どおり
+- 失敗時: plugin を要求したのに未設定または到達不可なら明示エラー
+
+必須環境変数:
+
+- `GEMMA4_ENABLED=true`
+- `GEMMA4_BASE_URL=http://127.0.0.1:11434`
+- `GEMMA4_MODEL=gemma4`
+
+任意環境変数:
+
+- `GEMMA4_TIMEOUT=30`
+- `GEMMA4_API_KEY=...`
+
+例:
+
+```bash
+GEMMA4_ENABLED=true \
+GEMMA4_BASE_URL=http://127.0.0.1:11434 \
+GEMMA4_MODEL=gemma4 \
+chronicle-external-query run-query tests/fixtures/query_engine_bundle/representative_cli_bundle --query "release planning follow-up context" --mode hybrid --vector-fixture tests/fixtures/vector_matches/representative-vector-matches.json --answer-plugin gemma4 --json
+```
+
+opt-in gemma4 test:
+
+```bash
+pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py
 ```
 
 ## CI Baseline
@@ -156,6 +195,6 @@ bash scripts/smoke_clean_checkout.sh
 今後の拡張方針は [docs/extension-roadmap.md](docs/extension-roadmap.md) と
 [docs/pluggable-extension-spec.md](docs/pluggable-extension-spec.md) を参照してください。
 
-現時点では Milestone G まで実装済みで、fixture 拡張は registry 経由、
-provider credential は分離、baseline smoke は従来どおり committed fixture
-固定です。
+現時点では Milestone H まで実装済みで、fixture 拡張は registry 経由、
+provider credential は分離、`gemma4` は opt-in、baseline smoke は従来どおり
+committed fixture 固定です。

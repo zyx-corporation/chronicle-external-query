@@ -21,10 +21,12 @@ from chronicle_external_query.messages import DEFAULT_LOCALE, SUPPORTED_LOCALES,
 from chronicle_external_query.models import ImportValidationError
 from chronicle_external_query.plugins import (
     ProviderPluginError,
+    load_provider_plugin,
     list_provider_plugin_statuses,
 )
 from chronicle_external_query.retrieval.vector_adapter import load_static_vector_retriever
 from chronicle_external_query.runtime.answer_runtime import AnswerRuntime
+from chronicle_external_query.runtime.contracts import AnswerGenerationError
 
 
 def main() -> int:
@@ -62,6 +64,8 @@ def main() -> int:
         return _emit_registry_error(error=exc, locale=locale, as_json=args.json)
     except ProviderPluginError as exc:
         return _emit_plugin_error(error=exc, locale=locale, as_json=args.json)
+    except AnswerGenerationError as exc:
+        return _emit_plugin_error(error=exc, locale=locale, as_json=args.json)
 
     parser.print_help()
     return 1
@@ -86,6 +90,7 @@ def _build_parser() -> argparse.ArgumentParser:
     run.add_argument("--query", required=True)
     run.add_argument("--mode", choices=["graph", "hybrid"], default="graph")
     run.add_argument("--vector-fixture")
+    run.add_argument("--answer-plugin")
     run.add_argument("--reviewer", default="local-reviewer")
     run.add_argument("--consumer", default="local-consumer")
     run.add_argument("--output")
@@ -174,7 +179,14 @@ def _run_query(*, args: argparse.Namespace, locale: str) -> int:
         if args.vector_fixture
         else None
     )
-    runtime = AnswerRuntime(mode=args.mode, vector_retriever=vector_retriever)
+    answer_generator = None
+    if args.answer_plugin:
+        answer_generator = load_provider_plugin(args.answer_plugin).build_answer_generator()
+    runtime = AnswerRuntime(
+        mode=args.mode,
+        vector_retriever=vector_retriever,
+        answer_generator=answer_generator,
+    )
     answer = runtime.answer(bundle.graph_payload, query=args.query)
     artifact = build_evaluation_artifact(
         answer,
@@ -192,11 +204,13 @@ def _run_query(*, args: argparse.Namespace, locale: str) -> int:
         "query": args.query,
         "mode": args.mode,
         "vector_fixture": str(Path(args.vector_fixture)) if args.vector_fixture else "",
+        "answer_plugin": args.answer_plugin or "",
         "runtime_status": answer.status,
         "answer_text": answer.answer_text,
         "match_count": len(answer.graph_matches),
         "sufficient": artifact.sufficient,
         "missing_behavior": artifact.missing_behavior,
+        "metadata": answer.metadata,
         "artifact": {
             "artifact_version": artifact.artifact_version,
             "reviewer": artifact.reviewer,

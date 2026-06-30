@@ -61,6 +61,8 @@ Milestone F adds a fixture registry so future fixture growth can be opt-in and
 manifest-driven without weakening the committed baseline path.
 Milestone G adds provider plugin gating so credentialed or provider-backed
 tests remain opt-in and cannot silently join the default baseline.
+Milestone H adds local `gemma4` plugin tests that stay opt-in behind explicit
+flags and never become part of the default smoke path.
 
 ### Retrieval tests
 
@@ -135,6 +137,7 @@ Provider plugin opt-in entrypoints:
 ```bash
 pytest --run-provider-plugins tests/providers/
 pytest --run-hosted-providers -m hosted_provider
+pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py
 ```
 
 ## Test Data Rules

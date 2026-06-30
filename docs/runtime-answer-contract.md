@@ -46,6 +46,21 @@ Current metadata includes:
 - `top_match_source_record_ids`
 - `top_match_sources`
 - `coverage_summary`
+- `answer_generator`
+- `answer_generator_mode`
+- `answer_generator_fallback_used`
+
+When the baseline deterministic path is used:
+
+- `answer_generator: deterministic_baseline`
+- `answer_generator_mode: builtin`
+
+When the local `gemma4` plugin is used:
+
+- `answer_generator: gemma4`
+- `answer_generator_mode: local_plugin`
+- `answer_generator_model`
+- `answer_generator_base_url`
 
 ## Evaluation Artifact Alignment
 
@@ -74,3 +89,4 @@ Representative-bundle runtime regression should also prove:
 
 - the same query stays comparable across repeated local runs
 - hybrid answers preserve overlap context without hiding graph-only evidence
+- plugin-backed answers still serialize into the same artifact shape

@@ -93,6 +93,9 @@ Delivered:
 
 ## Milestone H: Local Gemma4 Runtime Plugin
 
+Status:
+Completed on 2026-06-30.
+
 Goal:
 Use local `gemma4` as the first real LLM-backed evaluation plugin without
 breaking the deterministic baseline path.
@@ -110,6 +113,14 @@ Exit Criteria:
 - local `gemma4` can be used for opt-in runtime evaluation
 - no `gemma4` dependency is required for the supported baseline path
 - plugin outputs still serialize into the existing artifact/review shape
+
+Delivered:
+
+- `AnswerRuntime` now supports an opt-in answer generator seam
+- local `gemma4` is registered as a provider plugin with `--answer-plugin gemma4`
+- local `gemma4` requests use OpenAI-compatible chat-completions over plain HTTP
+- plugin-backed answers preserve the current evaluation artifact shape
+- `gemma4` tests are gated behind `--run-provider-plugins --run-gemma4`
 
 ## Milestone I: Hosted Provider Plugins and Comparative Evaluation
 

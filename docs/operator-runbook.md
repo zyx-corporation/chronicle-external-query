@@ -115,6 +115,23 @@ Current provider plugin boundary rules:
 - plugin credentials stay in plugin-specific environment variables instead of
   shared baseline configuration
 
+Opt-in local gemma4 answer generation:
+
+```bash
+GEMMA4_ENABLED=true \
+GEMMA4_BASE_URL=http://127.0.0.1:11434 \
+GEMMA4_MODEL=gemma4 \
+chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
+```
+
+Operational expectations:
+
+- the local runtime must expose an OpenAI-compatible `POST /v1/chat/completions`
+- if `--answer-plugin gemma4` is requested without valid config, the command
+  must fail explicitly
+- if `gemma4` is not requested, the deterministic baseline answer path remains
+  unchanged
+
 ## Review a Saved Artifact
 
 ```bash
