@@ -124,6 +124,13 @@ path when no plugin is provided.
 
 ### 3. Provider Plugin Protocol
 
+Current implementation status:
+Milestone G is now implemented for provider plugin registration and credential
+isolation. The repository ships `chronicle_external_query.plugins`, an explicit
+provider plugin loader, `list-plugins`, and plugin-specific environment-variable
+configuration reporting. Runtime answer generation remains on the deterministic
+built-in path until Milestone H.
+
 Purpose:
 Load optional provider-backed runtime or evaluation adapters with explicit
 configuration.
@@ -146,6 +153,16 @@ Provider-specific runtime plugins may also implement:
 - `AnswerGeneratorProtocol`
 - vector retrieval protocols
 - optional smoke hooks
+
+Current built-in registry entry:
+
+- `static-test-provider`
+- required credential env var:
+  `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
+- optional endpoint env var:
+  `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_ENDPOINT`
+- runtime integration:
+  reserved only, not active before Milestone H
 
 ## Proposed Package Layout
 
@@ -219,6 +236,7 @@ Remain unchanged:
 - `pytest`
 - `bash scripts/smoke_clean_checkout.sh`
 - `chronicle-external-query list-fixtures --json --no-env-fixture-dirs`
+- `chronicle-external-query list-plugins --json`
 
 These must not require plugins, credentials, or local model availability.
 
@@ -229,6 +247,8 @@ Suggested separation:
 - `pytest -m provider_plugin`
 - `pytest tests/providers/`
 - `pytest --run-gemma4`
+- `pytest --run-provider-plugins tests/providers/`
+- `pytest --run-hosted-providers -m hosted_provider`
 
 Suggested markers:
 

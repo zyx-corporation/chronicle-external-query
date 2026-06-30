@@ -19,6 +19,10 @@ from chronicle_external_query.fixtures import FixtureRegistry, FixtureRegistryEr
 from chronicle_external_query.ingest.handoff_loader import HandoffLoader
 from chronicle_external_query.messages import DEFAULT_LOCALE, SUPPORTED_LOCALES, message, resolve_locale
 from chronicle_external_query.models import ImportValidationError
+from chronicle_external_query.plugins import (
+    ProviderPluginError,
+    list_provider_plugin_statuses,
+)
 from chronicle_external_query.retrieval.vector_adapter import load_static_vector_retriever
 from chronicle_external_query.runtime.answer_runtime import AnswerRuntime
 
@@ -41,6 +45,8 @@ def main() -> int:
             return _compare_artifacts(args=args, locale=locale)
         if args.command == "list-fixtures":
             return _list_fixtures(args=args, locale=locale)
+        if args.command == "list-plugins":
+            return _list_plugins(args=args, locale=locale)
         if args.command == "render-artifact-report":
             return _render_artifact_report(args=args, locale=locale)
         if args.command == "render-comparison-report":
@@ -54,6 +60,8 @@ def main() -> int:
         )
     except FixtureRegistryError as exc:
         return _emit_registry_error(error=exc, locale=locale, as_json=args.json)
+    except ProviderPluginError as exc:
+        return _emit_plugin_error(error=exc, locale=locale, as_json=args.json)
 
     parser.print_help()
     return 1
@@ -109,6 +117,10 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     fixtures.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
     fixtures.add_argument("--json", action="store_true")
+
+    plugins = subparsers.add_parser("list-plugins")
+    plugins.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
+    plugins.add_argument("--json", action="store_true")
 
     report = subparsers.add_parser("render-artifact-report")
     report.add_argument("artifact_path")
@@ -267,6 +279,35 @@ def _list_fixtures(*, args: argparse.Namespace, locale: str) -> int:
     return _emit_result(payload=payload, as_json=args.json)
 
 
+def _list_plugins(*, args: argparse.Namespace, locale: str) -> int:
+    statuses = list_provider_plugin_statuses()
+    payload: dict[str, Any] = {
+        "status": "plugins_loaded",
+        "summary": message("cli.plugins.success", locale=locale),
+        "plugin_count": len(statuses),
+        "plugins": [
+            {
+                "plugin_name": status.plugin_name,
+                "available": status.available,
+                "availability_reason": status.availability_reason,
+                "config_fields": [
+                    {
+                        "key": field.key,
+                        "env_var": field.env_var,
+                        "required": field.required,
+                        "secret": field.secret,
+                        "description": field.description,
+                    }
+                    for field in status.config_fields
+                ],
+                "metadata": status.metadata,
+            }
+            for status in statuses
+        ],
+    }
+    return _emit_result(payload=payload, as_json=args.json)
+
+
 def _render_artifact_report(*, args: argparse.Namespace, locale: str) -> int:
     artifact = load_evaluation_artifact(Path(args.artifact_path))
     markdown = render_markdown_trial_report(artifact)
@@ -345,6 +386,17 @@ def _emit_registry_error(*, error: FixtureRegistryError, locale: str, as_json: b
     return _emit_result(payload=payload, as_json=as_json, exit_code=1)
 
 
+def _emit_plugin_error(*, error: ProviderPluginError, locale: str, as_json: bool) -> int:
+    payload = {
+        "status": "error",
+        "summary": message("cli.plugins.failure", locale=locale),
+        "error": str(error),
+        "error_code": "provider_plugin.invalid_configuration",
+        "error_category": "provider_plugin",
+    }
+    return _emit_result(payload=payload, as_json=as_json, exit_code=1)
+
+
 def _emit_result(*, payload: dict[str, Any], as_json: bool, exit_code: int = 0) -> int:
     if as_json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -365,6 +417,7 @@ def _failure_summary_key(command: str | None) -> str:
         "show-artifact": "cli.show.failure",
         "compare-artifacts": "cli.compare.failure",
         "list-fixtures": "cli.fixtures.failure",
+        "list-plugins": "cli.plugins.failure",
         "render-artifact-report": "cli.report.failure",
         "render-comparison-report": "cli.compare_report.failure",
     }

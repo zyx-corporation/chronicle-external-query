@@ -147,6 +147,18 @@ def test_list_fixtures_cli_accepts_optional_fixture_pack(tmp_path: Path):
     assert payload["fixtures"][-1]["source_name"] == "cli_optional_pack"
 
 
+def test_list_plugins_cli_returns_provider_plugin_registry():
+    result = _run_cli("list-plugins", "--json", "--locale", "en")
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "plugins_loaded"
+    assert payload["plugin_count"] == 1
+    assert payload["plugins"][0]["plugin_name"] == "static-test-provider"
+    assert payload["plugins"][0]["available"] is False
+    assert payload["plugins"][0]["metadata"]["credential_mode"] == "env_only"
+
+
 def test_run_query_cli_can_write_artifact(tmp_path: Path):
     output_path = tmp_path / "artifact.json"
 

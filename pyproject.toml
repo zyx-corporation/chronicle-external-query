@@ -30,3 +30,8 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+  "provider_plugin: opt-in provider plugin tests excluded from the default baseline",
+  "hosted_provider: opt-in hosted provider tests excluded from the default baseline",
+  "gemma4: opt-in local gemma4 plugin tests excluded from the default baseline",
+]

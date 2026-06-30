@@ -61,6 +61,9 @@ Delivered:
 
 ## Milestone G: Provider Plugin Surface and Credential Isolation
 
+Status:
+Completed on 2026-06-30.
+
 Goal:
 Make provider-backed tests and runtime adapters pluggable, opt-in, and isolated
 from the default local-only baseline.
@@ -77,6 +80,16 @@ Exit Criteria:
 - provider-backed tests do not run in the default `pytest` or smoke path
 - credential handling is isolated to plugin configuration
 - the core package can operate without any provider plugin installed
+
+Delivered:
+
+- `chronicle_external_query.plugins` now provides provider plugin contracts,
+  registry definitions, and explicit loader behavior
+- `list-plugins` exposes plugin availability, configuration fields, and
+  credential isolation metadata
+- provider credentials are isolated to plugin-specific environment variables
+- provider tests are gated behind `--run-provider-plugins` and
+  `--run-hosted-providers`
 
 ## Milestone H: Local Gemma4 Runtime Plugin
 

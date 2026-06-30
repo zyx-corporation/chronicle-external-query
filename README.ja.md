@@ -27,6 +27,7 @@ English README: [README.md](README.md)
 - clean checkout から再現できる smoke baseline
 - committed baseline fixture と optional fixture pack を分離する
   pluggable fixture registry
+- env-only credential discovery と opt-in test 分離を持つ provider plugin registry
 
 ## Repository Layout
 
@@ -88,6 +89,7 @@ PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh
 chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
+chronicle-external-query list-plugins --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
@@ -111,6 +113,32 @@ chronicle-external-query list-fixtures --json --no-env-fixture-dirs
 CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS=/path/to/fixture-pack chronicle-external-query list-fixtures --json
 ```
 
+## Provider Plugin Surface
+
+Milestone G では provider plugin の seam だけを先に導入し、provider 自体は
+supported baseline に混ぜていません。
+
+- provider plugin は明示登録され、`chronicle-external-query list-plugins --json`
+  で inspection できます
+- credential は plugin ごとの環境変数に隔離されます
+- default の `pytest` と smoke baseline は provider plugin test を実行しません
+- provider が未設定でも baseline path は変化せず、available 状態だけが明示されます
+
+現時点の built-in seam:
+
+- `static-test-provider`
+- required credential env var:
+  `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
+- optional endpoint override:
+  `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_ENDPOINT`
+- runtime への実接続は Milestone H まで無効
+
+opt-in provider test:
+
+```bash
+pytest --run-provider-plugins tests/providers/
+```
+
 ## CI Baseline
 
 ```bash
@@ -128,5 +156,6 @@ bash scripts/smoke_clean_checkout.sh
 今後の拡張方針は [docs/extension-roadmap.md](docs/extension-roadmap.md) と
 [docs/pluggable-extension-spec.md](docs/pluggable-extension-spec.md) を参照してください。
 
-現時点では Milestone F まで実装済みで、fixture 拡張は registry 経由、
-baseline smoke は従来どおり committed fixture 固定です。
+現時点では Milestone G まで実装済みで、fixture 拡張は registry 経由、
+provider credential は分離、baseline smoke は従来どおり committed fixture
+固定です。

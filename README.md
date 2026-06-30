@@ -61,6 +61,8 @@ This repository currently provides:
   overlap tracking, and provider-neutral vector seams
 - a pluggable fixture registry with committed baseline fixtures and optional
   manifest-driven fixture packs
+- an explicit provider plugin registry with env-only credential discovery and
+  opt-in provider test isolation
 
 ## Repository Layout
 
@@ -118,6 +120,7 @@ example `PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.
 chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
+chronicle-external-query list-plugins --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
@@ -163,6 +166,33 @@ Manifest shape:
 }
 ```
 
+## Provider Plugin Surface
+
+Milestone G adds the provider plugin seam without making any provider
+mandatory.
+
+- provider plugins are registered explicitly and inspected through
+  `chronicle-external-query list-plugins --json`
+- credentials stay isolated to plugin-specific environment variables
+- the default `pytest` and smoke baseline do not run provider plugin tests
+- provider availability is reported explicitly instead of mutating the baseline
+  path silently
+
+Current built-in provider seam:
+
+- `static-test-provider`
+- required credential env var:
+  `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
+- optional endpoint override:
+  `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_ENDPOINT`
+- runtime integration remains disabled until Milestone H
+
+Opt-in provider tests:
+
+```bash
+pytest --run-provider-plugins tests/providers/
+```
+
 ## CI Baseline
 
 ```bash
@@ -179,3 +209,7 @@ The first supported local downstream runtime baseline is documented in
 The post-`v0.2.0` extension track now has Milestone F implemented locally:
 fixture growth is registry-driven, while the default smoke and `pytest` path
 remain pinned to committed baseline fixtures.
+
+Milestone G is also implemented locally: provider plugin registration,
+credential isolation, and opt-in provider test gating are now in place without
+changing the supported baseline runtime path.

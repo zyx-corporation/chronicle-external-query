@@ -100,6 +100,21 @@ an extension surface for extra regression packs and provider-comparison suites;
 the baseline smoke path continues to rely only on the committed in-repo
 fixtures.
 
+Optional provider plugin inspection:
+
+```bash
+chronicle-external-query list-plugins --json
+```
+
+Current provider plugin boundary rules:
+
+- provider plugins are advisory and opt-in
+- missing credentials must produce an unavailable state, not a baseline failure
+- provider runtime behavior must not become the default answer path before an
+  explicit follow-on milestone
+- plugin credentials stay in plugin-specific environment variables instead of
+  shared baseline configuration
+
 ## Review a Saved Artifact
 
 ```bash

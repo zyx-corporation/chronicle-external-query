@@ -59,6 +59,8 @@ representative sanitized CLI-generated bundle fixture are now part of the
 repository baseline, and additional fixtures should expand from there.
 Milestone F adds a fixture registry so future fixture growth can be opt-in and
 manifest-driven without weakening the committed baseline path.
+Milestone G adds provider plugin gating so credentialed or provider-backed
+tests remain opt-in and cannot silently join the default baseline.
 
 ### Retrieval tests
 
@@ -117,6 +119,7 @@ pytest
 chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
 chronicle-external-query show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
 chronicle-external-query list-fixtures --json --no-env-fixture-dirs
+chronicle-external-query list-plugins --json
 chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --json
 ```
 
@@ -127,6 +130,13 @@ Current CI smoke also exercises:
 - markdown comparison report rendering from two saved artifacts
 - provider-adapter tests behind explicit opt-in markers in the future
 
+Provider plugin opt-in entrypoints:
+
+```bash
+pytest --run-provider-plugins tests/providers/
+pytest --run-hosted-providers -m hosted_provider
+```
+
 ## Test Data Rules
 
 - keep small synthetic fixtures in the repo for deterministic tests
@@ -135,6 +145,8 @@ Current CI smoke also exercises:
   records
 - register optional fixture packs through `fixture-pack.json` manifests instead
   of hardcoding new fixture trees into the default baseline
+- register provider credentials only through plugin-specific environment
+  variables, not through baseline package imports or shared config files
 
 ## Coverage Expectations
 
