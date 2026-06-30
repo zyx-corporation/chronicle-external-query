@@ -35,6 +35,20 @@ running the script:
 PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh
 ```
 
+## Local Act Rehearsal
+
+If you want to reproduce repository CI and release rehearsal locally:
+
+```bash
+bash scripts/run_local_act.sh doctor
+bash scripts/run_local_act.sh ci
+bash scripts/run_local_act.sh all
+```
+
+Use `doctor` first when `act` cannot find Docker or its credential helper.
+Use `all` when you want the CI baseline plus the release workflow through
+`build-release-notes` in one command.
+
 ## Locale Override
 
 Explicit CLI locale:

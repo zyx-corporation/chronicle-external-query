@@ -66,6 +66,7 @@ Focus on:
 
 - CLI entrypoints
 - CI checks
+- local `act` rehearsal paths
 - release workflows
 - release-note generation
 - operator setup

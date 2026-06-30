@@ -20,6 +20,24 @@ bash scripts/smoke_clean_checkout.sh
 GitHub Actions also runs the same baseline on pushes and pull requests to
 `main`.
 
+Local `act` rehearsal:
+
+```bash
+bash scripts/run_local_act.sh doctor
+bash scripts/run_local_act.sh ci
+bash scripts/run_local_act.sh release-verify
+bash scripts/run_local_act.sh release-notes
+```
+
+One-command local rehearsal:
+
+```bash
+bash scripts/run_local_act.sh all
+```
+
+Pass extra `act` flags with `ACT_ARGS` or a trailing `-- ...`, for example
+`ACT_ARGS="--pull=false" bash scripts/run_local_act.sh ci -- --verbose`.
+
 For a shortest-path fresh clone workflow, see [Clean Checkout](clean-checkout.md).
 
 What the baseline smoke covers:
