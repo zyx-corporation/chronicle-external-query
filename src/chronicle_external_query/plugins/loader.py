@@ -13,6 +13,7 @@ from .contracts import (
 
 BUILTIN_PROVIDER_PLUGIN_MODULES: dict[str, str] = {
     "gemma4": "chronicle_external_query.plugins.providers.gemma4_local",
+    "openai-compatible-hosted": "chronicle_external_query.plugins.providers.openai_compatible_hosted",
     "static-test-provider": "chronicle_external_query.plugins.providers.static_test_provider",
 }
 

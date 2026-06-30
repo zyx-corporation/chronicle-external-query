@@ -45,6 +45,8 @@ def main() -> int:
             return _show_artifact(args=args, locale=locale)
         if args.command == "compare-artifacts":
             return _compare_artifacts(args=args, locale=locale)
+        if args.command == "compare-query-runs":
+            return _compare_query_runs(args=args, locale=locale)
         if args.command == "list-fixtures":
             return _list_fixtures(args=args, locale=locale)
         if args.command == "list-plugins":
@@ -107,6 +109,19 @@ def _build_parser() -> argparse.ArgumentParser:
     compare.add_argument("right_artifact_path")
     compare.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
     compare.add_argument("--json", action="store_true")
+
+    compare_runs = subparsers.add_parser("compare-query-runs")
+    compare_runs.add_argument("bundle_dir")
+    compare_runs.add_argument("--query", required=True)
+    compare_runs.add_argument("--mode", choices=["graph", "hybrid"], default="graph")
+    compare_runs.add_argument("--vector-fixture")
+    compare_runs.add_argument("--answer-plugin", required=True)
+    compare_runs.add_argument("--reviewer", default="local-reviewer")
+    compare_runs.add_argument("--consumer", default="local-consumer")
+    compare_runs.add_argument("--baseline-output")
+    compare_runs.add_argument("--plugin-output")
+    compare_runs.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
+    compare_runs.add_argument("--json", action="store_true")
 
     fixtures = subparsers.add_parser("list-fixtures")
     fixtures.add_argument(
@@ -262,6 +277,73 @@ def _compare_artifacts(*, args: argparse.Namespace, locale: str) -> int:
         "comparison_summary": _build_comparison_summary(comparison),
         "comparison": comparison,
     }
+    return _emit_result(payload=payload, as_json=args.json)
+
+
+def _compare_query_runs(*, args: argparse.Namespace, locale: str) -> int:
+    bundle = HandoffLoader().load_bundle(Path(args.bundle_dir))
+    vector_retriever = (
+        load_static_vector_retriever(Path(args.vector_fixture))
+        if args.vector_fixture
+        else None
+    )
+    baseline_runtime = AnswerRuntime(mode=args.mode, vector_retriever=vector_retriever)
+    plugin_runtime = AnswerRuntime(
+        mode=args.mode,
+        vector_retriever=vector_retriever,
+        answer_generator=load_provider_plugin(args.answer_plugin).build_answer_generator(),
+    )
+    baseline_answer = baseline_runtime.answer(bundle.graph_payload, query=args.query)
+    plugin_answer = plugin_runtime.answer(bundle.graph_payload, query=args.query)
+    bundle_summary = _build_bundle_summary(bundle)
+    baseline_artifact = build_evaluation_artifact(
+        baseline_answer,
+        reviewer=args.reviewer,
+        downstream_consumer=args.consumer,
+        files_reviewed=["query_engine_handoff.json", "graph.json", "bundle_manifest.json"],
+        bundle_summary=bundle_summary,
+    )
+    plugin_artifact = build_evaluation_artifact(
+        plugin_answer,
+        reviewer=args.reviewer,
+        downstream_consumer=args.consumer,
+        files_reviewed=["query_engine_handoff.json", "graph.json", "bundle_manifest.json"],
+        bundle_summary=bundle_summary,
+    )
+    if args.baseline_output:
+        save_evaluation_artifact(baseline_artifact, Path(args.baseline_output))
+    if args.plugin_output:
+        save_evaluation_artifact(plugin_artifact, Path(args.plugin_output))
+    comparison = compare_evaluation_artifacts(baseline_artifact, plugin_artifact)
+    payload: dict[str, Any] = {
+        "status": "comparative_evaluation_completed",
+        "summary": message("cli.compare_query_runs.success", locale=locale),
+        "bundle_dir": str(bundle.paths.bundle_dir),
+        "query": args.query,
+        "mode": args.mode,
+        "vector_fixture": str(Path(args.vector_fixture)) if args.vector_fixture else "",
+        "answer_plugin": args.answer_plugin,
+        "baseline": {
+            "runtime_status": baseline_artifact.runtime_status,
+            "answer_text": baseline_artifact.answer_text,
+            "metadata": baseline_artifact.metadata,
+            "match_count": len(baseline_artifact.matches),
+            "sufficient": baseline_artifact.sufficient,
+        },
+        "plugin": {
+            "runtime_status": plugin_artifact.runtime_status,
+            "answer_text": plugin_artifact.answer_text,
+            "metadata": plugin_artifact.metadata,
+            "match_count": len(plugin_artifact.matches),
+            "sufficient": plugin_artifact.sufficient,
+        },
+        "comparison_summary": _build_comparison_summary(comparison),
+        "comparison": comparison,
+    }
+    if args.baseline_output:
+        payload["baseline_output_path"] = str(Path(args.baseline_output))
+    if args.plugin_output:
+        payload["plugin_output_path"] = str(Path(args.plugin_output))
     return _emit_result(payload=payload, as_json=args.json)
 
 
@@ -430,6 +512,7 @@ def _failure_summary_key(command: str | None) -> str:
         "run-query": "cli.run.failure",
         "show-artifact": "cli.show.failure",
         "compare-artifacts": "cli.compare.failure",
+        "compare-query-runs": "cli.compare_query_runs.failure",
         "list-fixtures": "cli.fixtures.failure",
         "list-plugins": "cli.plugins.failure",
         "render-artifact-report": "cli.report.failure",
@@ -465,6 +548,8 @@ def _build_comparison_summary(comparison: dict[str, Any]) -> dict[str, Any]:
         for field in (
             "runtime_status_changed",
             "retrieval_mode_changed",
+            "answer_text_changed",
+            "metadata_changed",
             "sufficiency_changed",
             "missing_behavior_changed",
             "insufficiency_changed",

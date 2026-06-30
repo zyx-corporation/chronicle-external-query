@@ -124,6 +124,9 @@ Delivered:
 
 ## Milestone I: Hosted Provider Plugins and Comparative Evaluation
 
+Status:
+Completed on 2026-06-30.
+
 Goal:
 Allow hosted vector or LLM providers to participate in comparative evaluation
 through the same plugin surface.
@@ -140,6 +143,14 @@ Exit Criteria:
 - hosted provider plugins remain optional
 - comparative evaluation can be run without changing core contracts
 - plugin failures stay isolated and do not downgrade the baseline path
+
+Delivered:
+
+- `openai-compatible-hosted` is now registered as an optional hosted answer plugin
+- `compare-query-runs` compares baseline and plugin-backed answers using the
+  existing evaluation artifact contract
+- hosted-provider tests are gated behind `--run-provider-plugins --run-hosted-providers`
+- comparison output now highlights `answer_text_changed` and `metadata_changed`
 
 ## Milestone J: Release Automation Beyond Smoke CI
 

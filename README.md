@@ -65,6 +65,8 @@ This repository currently provides:
   opt-in provider test isolation
 - a local `gemma4` answer plugin that stays opt-in and preserves the baseline
   runtime path when not requested
+- an optional hosted provider plugin plus comparative evaluation against the
+  deterministic baseline
 
 ## Repository Layout
 
@@ -124,6 +126,7 @@ chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
 chronicle-external-query list-plugins --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
+chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin openai-compatible-hosted --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
@@ -234,6 +237,45 @@ Opt-in gemma4 tests:
 pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py
 ```
 
+## Hosted Provider Comparison
+
+Milestone I adds the first hosted provider plugin and a one-shot comparative
+evaluation flow.
+
+- hosted plugin name: `openai-compatible-hosted`
+- comparison CLI:
+  `chronicle-external-query compare-query-runs ... --answer-plugin openai-compatible-hosted`
+- baseline smoke path: unchanged
+- comparison contract: reuses the same evaluation artifact shape and standard
+  artifact comparison fields
+
+Required environment:
+
+- `OPENAI_COMPATIBLE_HOSTED_ENABLED=true`
+- `OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example`
+- `OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model`
+- `OPENAI_COMPATIBLE_HOSTED_API_KEY=...`
+
+Optional environment:
+
+- `OPENAI_COMPATIBLE_HOSTED_TIMEOUT=30`
+
+Example:
+
+```bash
+OPENAI_COMPATIBLE_HOSTED_ENABLED=true \
+OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example \
+OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model \
+OPENAI_COMPATIBLE_HOSTED_API_KEY=secret \
+chronicle-external-query compare-query-runs tests/fixtures/query_engine_bundle/representative_cli_bundle --query "release planning follow-up context" --mode hybrid --vector-fixture tests/fixtures/vector_matches/representative-vector-matches.json --answer-plugin openai-compatible-hosted --baseline-output baseline-artifact.json --plugin-output hosted-artifact.json --json
+```
+
+Opt-in hosted-provider tests:
+
+```bash
+pytest --run-provider-plugins --run-hosted-providers tests/providers/test_openai_compatible_hosted_plugin.py
+```
+
 ## CI Baseline
 
 ```bash
@@ -258,3 +300,7 @@ changing the supported baseline runtime path.
 Milestone H is now implemented locally as well: `gemma4` can be requested as a
 local answer plugin, while the supported baseline remains deterministic and
 provider-free by default.
+
+Milestone I is now implemented locally too: hosted provider plugins remain
+optional, and comparative evaluation can be run without changing the baseline
+artifact contract.

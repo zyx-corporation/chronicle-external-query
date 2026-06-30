@@ -132,6 +132,23 @@ Operational expectations:
 - if `gemma4` is not requested, the deterministic baseline answer path remains
   unchanged
 
+Opt-in hosted provider comparison:
+
+```bash
+OPENAI_COMPATIBLE_HOSTED_ENABLED=true \
+OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example \
+OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model \
+OPENAI_COMPATIBLE_HOSTED_API_KEY=secret \
+chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin openai-compatible-hosted --json
+```
+
+Operational expectations:
+
+- hosted credentials stay isolated to the hosted-plugin environment variables
+- hosted plugin failure must remain explicit and must not mutate the baseline path
+- comparative evaluation should be reviewable through the normal artifact compare
+  contract rather than a separate hosted-only format
+
 ## Review a Saved Artifact
 
 ```bash

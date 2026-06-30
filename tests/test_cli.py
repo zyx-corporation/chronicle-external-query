@@ -155,9 +155,11 @@ def test_list_plugins_cli_returns_provider_plugin_registry():
     assert result.returncode == 0
     payload = json.loads(result.stdout)
     assert payload["status"] == "plugins_loaded"
-    assert payload["plugin_count"] == 2
+    assert payload["plugin_count"] == 3
     assert payload["plugins"][0]["plugin_name"] == "gemma4"
-    assert payload["plugins"][1]["plugin_name"] == "static-test-provider"
+    assert payload["plugins"][1]["plugin_name"] == "openai-compatible-hosted"
+    assert payload["plugins"][1]["metadata"]["hosting_mode"] == "hosted"
+    assert payload["plugins"][2]["plugin_name"] == "static-test-provider"
     assert payload["plugins"][0]["available"] is False
     assert payload["plugins"][0]["metadata"]["supports_answer_generation"] is True
 
@@ -233,6 +235,62 @@ def test_run_query_cli_returns_error_when_gemma4_plugin_is_not_configured():
     assert payload["status"] == "error"
     assert payload["error_category"] == "provider_plugin"
     assert "GEMMA4_ENABLED is not enabled" in payload["error"]
+
+
+def test_compare_query_runs_cli_compares_baseline_with_hosted_plugin(tmp_path: Path):
+    baseline_output = tmp_path / "baseline.json"
+    plugin_output = tmp_path / "plugin.json"
+    server = _start_json_server(
+        response_body={
+            "choices": [
+                {
+                    "message": {
+                        "content": "hosted provider answer",
+                    }
+                }
+            ]
+        }
+    )
+
+    try:
+        result = _run_cli(
+            "compare-query-runs",
+            str(FIXTURE_BUNDLE_DIR),
+            "--query",
+            "fixture bundle",
+            "--mode",
+            "graph",
+            "--answer-plugin",
+            "openai-compatible-hosted",
+            "--baseline-output",
+            str(baseline_output),
+            "--plugin-output",
+            str(plugin_output),
+            "--json",
+            "--locale",
+            "en",
+            env={
+                "OPENAI_COMPATIBLE_HOSTED_ENABLED": "true",
+                "OPENAI_COMPATIBLE_HOSTED_BASE_URL": server.base_url,
+                "OPENAI_COMPATIBLE_HOSTED_MODEL": "hosted-model",
+                "OPENAI_COMPATIBLE_HOSTED_API_KEY": "hosted-key",
+            },
+        )
+    finally:
+        server.shutdown()
+        server.thread.join(timeout=5)
+        server.server_close()
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "comparative_evaluation_completed"
+    assert payload["answer_plugin"] == "openai-compatible-hosted"
+    assert payload["baseline"]["metadata"]["answer_generator"] == "deterministic_baseline"
+    assert payload["plugin"]["metadata"]["answer_generator"] == "openai-compatible-hosted"
+    assert payload["comparison"]["answer_text_changed"] is True
+    assert "answer_text_changed" in payload["comparison_summary"]["changed_fields"]
+    assert baseline_output.exists()
+    assert plugin_output.exists()
 
 
 class _JsonHandler(BaseHTTPRequestHandler):

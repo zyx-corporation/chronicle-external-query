@@ -170,6 +170,16 @@ Current built-in registry entry:
   `GEMMA4_TIMEOUT`, `GEMMA4_API_KEY`
 - runtime integration:
   active for opt-in answer generation
+- `openai-compatible-hosted`
+- required env vars:
+  `OPENAI_COMPATIBLE_HOSTED_ENABLED`,
+  `OPENAI_COMPATIBLE_HOSTED_BASE_URL`,
+  `OPENAI_COMPATIBLE_HOSTED_MODEL`,
+  `OPENAI_COMPATIBLE_HOSTED_API_KEY`
+- optional env var:
+  `OPENAI_COMPATIBLE_HOSTED_TIMEOUT`
+- runtime integration:
+  active for opt-in hosted answer generation and comparative evaluation
 - `static-test-provider`
 - required credential env var:
   `CHRONICLE_EXTERNAL_QUERY_STATIC_TEST_PROVIDER_API_KEY`
@@ -264,6 +274,7 @@ Suggested separation:
 - `pytest --run-provider-plugins tests/providers/`
 - `pytest --run-hosted-providers -m hosted_provider`
 - `pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py`
+- `pytest --run-provider-plugins --run-hosted-providers tests/providers/test_openai_compatible_hosted_plugin.py`
 
 Suggested markers:
 

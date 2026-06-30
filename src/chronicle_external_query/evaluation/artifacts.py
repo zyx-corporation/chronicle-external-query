@@ -316,6 +316,8 @@ def compare_evaluation_artifacts(
         "query_matches": left.query == right.query,
         "runtime_status_changed": left.runtime_status != right.runtime_status,
         "retrieval_mode_changed": left.retrieval_mode != right.retrieval_mode,
+        "answer_text_changed": left.answer_text != right.answer_text,
+        "metadata_changed": left.metadata != right.metadata,
         "sufficiency_changed": left.sufficient != right.sufficient,
         "match_count_delta": len(right.matches) - len(left.matches),
         "missing_behavior_changed": left.missing_behavior != right.missing_behavior,

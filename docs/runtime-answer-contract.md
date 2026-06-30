@@ -62,6 +62,13 @@ When the local `gemma4` plugin is used:
 - `answer_generator_model`
 - `answer_generator_base_url`
 
+When a hosted OpenAI-compatible plugin is used:
+
+- `answer_generator: openai-compatible-hosted`
+- `answer_generator_mode: hosted_plugin`
+- `answer_generator_model`
+- `answer_generator_base_url`
+
 ## Evaluation Artifact Alignment
 
 Runtime answers are serialized into local evaluation artifacts that preserve:

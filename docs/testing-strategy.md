@@ -63,6 +63,8 @@ Milestone G adds provider plugin gating so credentialed or provider-backed
 tests remain opt-in and cannot silently join the default baseline.
 Milestone H adds local `gemma4` plugin tests that stay opt-in behind explicit
 flags and never become part of the default smoke path.
+Milestone I adds hosted provider tests and comparison flows that remain opt-in
+behind the hosted-provider gate.
 
 ### Retrieval tests
 
@@ -138,6 +140,7 @@ Provider plugin opt-in entrypoints:
 pytest --run-provider-plugins tests/providers/
 pytest --run-hosted-providers -m hosted_provider
 pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py
+pytest --run-provider-plugins --run-hosted-providers tests/providers/test_openai_compatible_hosted_plugin.py
 ```
 
 ## Test Data Rules

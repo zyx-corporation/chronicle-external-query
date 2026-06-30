@@ -29,6 +29,7 @@ English README: [README.md](README.md)
   pluggable fixture registry
 - env-only credential discovery と opt-in test 分離を持つ provider plugin registry
 - opt-in でだけ動作する local `gemma4` answer plugin
+- optional な hosted provider plugin と baseline 比較評価
 
 ## Repository Layout
 
@@ -92,6 +93,7 @@ chronicle-external-query show-bundle /path/to/handoff-bundle --json
 chronicle-external-query list-fixtures --json
 chronicle-external-query list-plugins --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
+chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin openai-compatible-hosted --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
@@ -178,6 +180,44 @@ opt-in gemma4 test:
 pytest --run-provider-plugins --run-gemma4 tests/providers/test_gemma4_plugin.py
 ```
 
+## Hosted Provider Comparison
+
+Milestone I では、最初の hosted provider plugin と、baseline との比較評価導線を
+追加しました。
+
+- hosted plugin 名: `openai-compatible-hosted`
+- 比較 CLI:
+  `chronicle-external-query compare-query-runs ... --answer-plugin openai-compatible-hosted`
+- baseline smoke path: 変更なし
+- 比較 contract: 既存の evaluation artifact shape と compare ロジックをそのまま利用
+
+必須環境変数:
+
+- `OPENAI_COMPATIBLE_HOSTED_ENABLED=true`
+- `OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example`
+- `OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model`
+- `OPENAI_COMPATIBLE_HOSTED_API_KEY=...`
+
+任意環境変数:
+
+- `OPENAI_COMPATIBLE_HOSTED_TIMEOUT=30`
+
+例:
+
+```bash
+OPENAI_COMPATIBLE_HOSTED_ENABLED=true \
+OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example \
+OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model \
+OPENAI_COMPATIBLE_HOSTED_API_KEY=secret \
+chronicle-external-query compare-query-runs tests/fixtures/query_engine_bundle/representative_cli_bundle --query "release planning follow-up context" --mode hybrid --vector-fixture tests/fixtures/vector_matches/representative-vector-matches.json --answer-plugin openai-compatible-hosted --baseline-output baseline-artifact.json --plugin-output hosted-artifact.json --json
+```
+
+opt-in hosted provider test:
+
+```bash
+pytest --run-provider-plugins --run-hosted-providers tests/providers/test_openai_compatible_hosted_plugin.py
+```
+
 ## CI Baseline
 
 ```bash
@@ -195,6 +235,6 @@ bash scripts/smoke_clean_checkout.sh
 今後の拡張方針は [docs/extension-roadmap.md](docs/extension-roadmap.md) と
 [docs/pluggable-extension-spec.md](docs/pluggable-extension-spec.md) を参照してください。
 
-現時点では Milestone H まで実装済みで、fixture 拡張は registry 経由、
-provider credential は分離、`gemma4` は opt-in、baseline smoke は従来どおり
-committed fixture 固定です。
+現時点では Milestone I まで実装済みで、fixture 拡張は registry 経由、
+provider credential は分離、`gemma4` と hosted provider は opt-in、
+baseline smoke は従来どおり committed fixture 固定です。
