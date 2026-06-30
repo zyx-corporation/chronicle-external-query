@@ -1,0 +1,7 @@
+{
+  "inputs": {
+    "version": "v0.3.0-local-optional",
+    "publish_release": "false",
+    "run_optional_plugin_matrix": "true"
+  }
+}

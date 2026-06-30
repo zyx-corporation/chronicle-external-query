@@ -314,12 +314,16 @@ Local `act` release verification:
 
 ```bash
 bash scripts/run_local_act.sh release-verify
+bash scripts/run_local_act.sh release-verify-optional
 bash scripts/run_local_act.sh release-notes
 ```
 
 The default workflow-dispatch payload lives at
 `.github/act/release-dispatch.event.json`. Override it with `ACT_EVENT_FILE=...`
 when you want to test a different local release input set.
+
+Use `release-verify-optional` when you want the local release gate to exercise
+the optional plugin matrix without editing the default event payload.
 
 Use `doctor` first if `act` cannot find Docker or its credential helper. Use
 `all` when you want the full local rehearsal in one command. It runs the CI

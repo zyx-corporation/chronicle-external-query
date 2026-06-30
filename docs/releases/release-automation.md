@@ -69,6 +69,7 @@ bash scripts/run_local_act.sh doctor
 bash scripts/run_local_act.sh ci
 bash scripts/run_local_act.sh all
 bash scripts/run_local_act.sh release-verify
+bash scripts/run_local_act.sh release-verify-optional
 bash scripts/run_local_act.sh release-notes
 ACT_ARGS="--pull=false" bash scripts/run_local_act.sh ci -- --verbose
 ```
@@ -77,9 +78,11 @@ Notes:
 
 - repository-local `.actrc` pins the runner image mapping and avoids the first-run prompt
 - default `workflow_dispatch` inputs live in `.github/act/release-dispatch.event.json`
+- optional-plugin rehearsal inputs live in `.github/act/release-dispatch.optional-plugins.event.json`
 - set `ACT_EVENT_FILE=/path/to/event.json` to test alternate release inputs
 - `doctor` checks `act`, Docker, the Docker Desktop credential helper, and the event payload path before a rehearsal run
 - `all` runs the local CI baseline and then the release workflow through `build-release-notes`, letting the workflow dependency chain cover `verify` once
+- `release-verify-optional` runs the same local release gate with `run_optional_plugin_matrix=true`
 - `ACT_ARGS` and trailing `-- ...` let operators pass through extra `act` flags for local debugging or cache-control runs
 - local `act` skips artifact upload/download steps because they depend on
   GitHub-hosted runtime tokens

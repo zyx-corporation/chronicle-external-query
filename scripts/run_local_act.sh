@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORKFLOW_DIR="${ROOT_DIR}/.github/workflows"
 DEFAULT_EVENT_FILE="${ROOT_DIR}/.github/act/release-dispatch.event.json"
+OPTIONAL_PLUGIN_EVENT_FILE="${ROOT_DIR}/.github/act/release-dispatch.optional-plugins.event.json"
 DOCKER_DESKTOP_BIN="${DOCKER_DESKTOP_BIN:-/Applications/Docker.app/Contents/Resources/bin}"
 
 ACT_BIN="${ACT_BIN:-}"
@@ -33,6 +34,7 @@ Usage:
   bash scripts/run_local_act.sh ci
   bash scripts/run_local_act.sh all
   bash scripts/run_local_act.sh release-verify
+  bash scripts/run_local_act.sh release-verify-optional
   bash scripts/run_local_act.sh release-notes
   bash scripts/run_local_act.sh <mode> -- [extra act args]
 
@@ -118,6 +120,12 @@ case "${MODE}" in
     exec "${ACT_PREFIX[@]}" workflow_dispatch \
       -W "${WORKFLOW_DIR}/release.yml" \
       -e "${EVENT_FILE}" \
+      -j verify
+    ;;
+  release-verify-optional)
+    exec "${ACT_PREFIX[@]}" workflow_dispatch \
+      -W "${WORKFLOW_DIR}/release.yml" \
+      -e "${OPTIONAL_PLUGIN_EVENT_FILE}" \
       -j verify
     ;;
   release-notes)
