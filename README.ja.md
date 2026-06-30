@@ -25,6 +25,8 @@ English README: [README.md](README.md)
 - graph-only / hybrid retrieval、shared provenance、provider-neutral vector seam
 - runtime answer、evaluation artifact、markdown report の local-only flow
 - clean checkout から再現できる smoke baseline
+- committed baseline fixture と optional fixture pack を分離する
+  pluggable fixture registry
 
 ## Repository Layout
 
@@ -85,9 +87,28 @@ PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh
 ```bash
 chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
+chronicle-external-query list-fixtures --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
+```
+
+## Fixture Registry
+
+Milestone F では、supported baseline を変えずに fixture 拡張面だけを
+pluggable にしました。
+
+- `baseline_minimal` と `baseline_representative` は引き続き committed
+  baseline fixture として default test suite を支えます
+- optional fixture pack は `fixture-pack.json` manifest で追加できます
+- optional fixture pack directory は `--fixture-dir` または
+  `CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS` から opt-in で読み込みます
+
+例:
+
+```bash
+chronicle-external-query list-fixtures --json --no-env-fixture-dirs
+CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS=/path/to/fixture-pack chronicle-external-query list-fixtures --json
 ```
 
 ## CI Baseline
@@ -106,3 +127,6 @@ bash scripts/smoke_clean_checkout.sh
 
 今後の拡張方針は [docs/extension-roadmap.md](docs/extension-roadmap.md) と
 [docs/pluggable-extension-spec.md](docs/pluggable-extension-spec.md) を参照してください。
+
+現時点では Milestone F まで実装済みで、fixture 拡張は registry 経由、
+baseline smoke は従来どおり committed fixture 固定です。

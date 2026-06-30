@@ -57,6 +57,8 @@ Real Chronicle-generated fixtures should be added as soon as Milestone A
 hardening begins. A sanitized minimal CLI-generated bundle fixture and a more
 representative sanitized CLI-generated bundle fixture are now part of the
 repository baseline, and additional fixtures should expand from there.
+Milestone F adds a fixture registry so future fixture growth can be opt-in and
+manifest-driven without weakening the committed baseline path.
 
 ### Retrieval tests
 
@@ -114,6 +116,7 @@ pip install -e ".[dev]"
 pytest
 chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
 chronicle-external-query show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
+chronicle-external-query list-fixtures --json --no-env-fixture-dirs
 chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cli_bundle --query "fixture bundle" --mode graph --json
 ```
 
@@ -130,6 +133,8 @@ Current CI smoke also exercises:
 - prefer copied or reduced real Chronicle bundle fixtures for contract tests
 - sanitize any fixture content before committing if it originates from real
   records
+- register optional fixture packs through `fixture-pack.json` manifests instead
+  of hardcoding new fixture trees into the default baseline
 
 ## Coverage Expectations
 

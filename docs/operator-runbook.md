@@ -88,6 +88,18 @@ Optional local vector fixture for hybrid evaluation:
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode hybrid --vector-fixture /path/to/vector-matches.json --json
 ```
 
+Optional fixture pack discovery:
+
+```bash
+chronicle-external-query list-fixtures --json --no-env-fixture-dirs
+CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS=/path/to/fixture-pack chronicle-external-query list-fixtures --json
+```
+
+Each optional fixture pack directory must contain `fixture-pack.json`. This is
+an extension surface for extra regression packs and provider-comparison suites;
+the baseline smoke path continues to rely only on the committed in-repo
+fixtures.
+
 ## Review a Saved Artifact
 
 ```bash

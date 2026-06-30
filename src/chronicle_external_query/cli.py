@@ -15,6 +15,7 @@ from chronicle_external_query.evaluation.artifacts import (
     render_markdown_trial_report,
     save_evaluation_artifact,
 )
+from chronicle_external_query.fixtures import FixtureRegistry, FixtureRegistryError
 from chronicle_external_query.ingest.handoff_loader import HandoffLoader
 from chronicle_external_query.messages import DEFAULT_LOCALE, SUPPORTED_LOCALES, message, resolve_locale
 from chronicle_external_query.models import ImportValidationError
@@ -38,6 +39,8 @@ def main() -> int:
             return _show_artifact(args=args, locale=locale)
         if args.command == "compare-artifacts":
             return _compare_artifacts(args=args, locale=locale)
+        if args.command == "list-fixtures":
+            return _list_fixtures(args=args, locale=locale)
         if args.command == "render-artifact-report":
             return _render_artifact_report(args=args, locale=locale)
         if args.command == "render-comparison-report":
@@ -49,6 +52,8 @@ def main() -> int:
             error=exc,
             as_json=args.json,
         )
+    except FixtureRegistryError as exc:
+        return _emit_registry_error(error=exc, locale=locale, as_json=args.json)
 
     parser.print_help()
     return 1
@@ -89,6 +94,21 @@ def _build_parser() -> argparse.ArgumentParser:
     compare.add_argument("right_artifact_path")
     compare.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
     compare.add_argument("--json", action="store_true")
+
+    fixtures = subparsers.add_parser("list-fixtures")
+    fixtures.add_argument(
+        "--fixture-dir",
+        action="append",
+        default=[],
+        help="optional fixture pack directory containing fixture-pack.json",
+    )
+    fixtures.add_argument(
+        "--no-env-fixture-dirs",
+        action="store_true",
+        help="ignore optional fixture directories from CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS",
+    )
+    fixtures.add_argument("--locale", choices=sorted(SUPPORTED_LOCALES))
+    fixtures.add_argument("--json", action="store_true")
 
     report = subparsers.add_parser("render-artifact-report")
     report.add_argument("artifact_path")
@@ -219,6 +239,34 @@ def _compare_artifacts(*, args: argparse.Namespace, locale: str) -> int:
     return _emit_result(payload=payload, as_json=args.json)
 
 
+def _list_fixtures(*, args: argparse.Namespace, locale: str) -> int:
+    registry = FixtureRegistry.default(
+        fixture_dirs=[Path(path) for path in args.fixture_dir],
+        include_env_fixture_dirs=not args.no_env_fixture_dirs,
+    )
+    fixture_sets = registry.list_fixture_sets()
+    payload: dict[str, Any] = {
+        "status": "fixtures_loaded",
+        "summary": message("cli.fixtures.success", locale=locale),
+        "fixture_count": len(fixture_sets),
+        "fixtures": [
+            {
+                "fixture_id": fixture_set.fixture_id,
+                "source_name": fixture_set.source_name,
+                "fixture_kind": fixture_set.fixture_kind,
+                "bundle_dir": str(fixture_set.bundle_dir),
+                "vector_fixture": (
+                    str(fixture_set.vector_fixture_path) if fixture_set.vector_fixture_path else ""
+                ),
+                "is_baseline": fixture_set.is_baseline,
+                "metadata": fixture_set.metadata,
+            }
+            for fixture_set in fixture_sets
+        ],
+    }
+    return _emit_result(payload=payload, as_json=args.json)
+
+
 def _render_artifact_report(*, args: argparse.Namespace, locale: str) -> int:
     artifact = load_evaluation_artifact(Path(args.artifact_path))
     markdown = render_markdown_trial_report(artifact)
@@ -286,6 +334,17 @@ def _emit_error(*, summary_key: str, locale: str, error: ImportValidationError, 
     return _emit_result(payload=payload, as_json=as_json, exit_code=1)
 
 
+def _emit_registry_error(*, error: FixtureRegistryError, locale: str, as_json: bool) -> int:
+    payload = {
+        "status": "error",
+        "summary": message("cli.fixtures.failure", locale=locale),
+        "error": str(error),
+        "error_code": "fixture_registry.invalid_configuration",
+        "error_category": "fixture_registry",
+    }
+    return _emit_result(payload=payload, as_json=as_json, exit_code=1)
+
+
 def _emit_result(*, payload: dict[str, Any], as_json: bool, exit_code: int = 0) -> int:
     if as_json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -305,6 +364,7 @@ def _failure_summary_key(command: str | None) -> str:
         "run-query": "cli.run.failure",
         "show-artifact": "cli.show.failure",
         "compare-artifacts": "cli.compare.failure",
+        "list-fixtures": "cli.fixtures.failure",
         "render-artifact-report": "cli.report.failure",
         "render-comparison-report": "cli.compare_report.failure",
     }

@@ -90,6 +90,63 @@ def test_show_bundle_cli_json_output():
     assert payload["primary_record_path"].endswith(".chronicle/chronicle.jsonl")
 
 
+def test_list_fixtures_cli_returns_baseline_registry():
+    result = _run_cli("list-fixtures", "--json", "--locale", "en", "--no-env-fixture-dirs")
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "fixtures_loaded"
+    assert payload["fixture_count"] == 2
+    assert [fixture["fixture_id"] for fixture in payload["fixtures"]] == [
+        "baseline_minimal",
+        "baseline_representative",
+    ]
+
+
+def test_list_fixtures_cli_accepts_optional_fixture_pack(tmp_path: Path):
+    pack_dir = tmp_path / "fixture-pack"
+    pack_dir.mkdir()
+    (pack_dir / "fixture-pack.json").write_text(
+        json.dumps(
+            {
+                "manifest_version": "1.0",
+                "source_name": "cli_optional_pack",
+                "fixtures": [
+                    {
+                        "fixture_id": "optional_cli_pack",
+                        "fixture_kind": "optional_provider_comparison_pack",
+                        "bundle_dir": os.path.relpath(REPRESENTATIVE_FIXTURE_BUNDLE_DIR, start=pack_dir),
+                        "vector_fixture": os.path.relpath(REPRESENTATIVE_VECTOR_FIXTURE_PATH, start=pack_dir),
+                        "metadata": {
+                            "origin": "sanitized Chronicle-derived fixture pack",
+                            "sanitization_status": "sanitized",
+                            "intended_test_scope": ["cli_registry"],
+                        },
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    result = _run_cli(
+        "list-fixtures",
+        "--json",
+        "--locale",
+        "en",
+        "--no-env-fixture-dirs",
+        "--fixture-dir",
+        str(pack_dir),
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["fixture_count"] == 3
+    assert payload["fixtures"][-1]["fixture_id"] == "optional_cli_pack"
+    assert payload["fixtures"][-1]["source_name"] == "cli_optional_pack"
+
+
 def test_run_query_cli_can_write_artifact(tmp_path: Path):
     output_path = tmp_path / "artifact.json"
 

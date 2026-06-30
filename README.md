@@ -1,8 +1,43 @@
 # chronicle-external-query
 
-`chronicle-external-query` is a downstream derived consumer for Chronicle Stack.
-It reads Chronicle-generated handoff bundles and keeps query/runtime execution
-outside Chronicle's primary-record boundary.
+`chronicle-external-query` is a downstream runtime workspace for
+Chronicle-derived handoff bundles.
+
+It exists to solve a specific boundary problem in Chronicle Stack.
+Chronicle Stack can produce useful derived outputs for downstream query engines
+such as `query_engine_handoff.json`, `graph.json`, `bundle_manifest.json`, and
+a descriptive import-adapter skeleton, but Chronicle itself should not become
+the place where external query execution, hosted retrieval infrastructure,
+provider experimentation, or downstream runtime behavior quietly accumulates.
+
+This repository is the separate implementation surface for that next step.
+It receives Chronicle-generated bundle outputs, validates them as contracts,
+loads them as read-only downstream inputs, runs retrieval and local runtime
+evaluation on top of them, and produces repeatable review artifacts such as
+saved evaluation JSON and markdown reports.
+
+That separation is necessary because the concerns are different:
+
+- Chronicle Stack is the authoritative producer of primary records and derived handoff bundles
+- `chronicle-external-query` is the downstream consumer that tests whether those bundles are sufficient for real query-engine use
+- Chronicle should preserve source authority and boundary discipline
+- this repository can evolve retrieval logic, runtime behavior, and comparison tooling without weakening Chronicle's role as the system of record
+
+In practice, this means the repository is the place to answer questions like:
+
+- can a Chronicle handoff bundle be validated safely before downstream use?
+- does graph-only or hybrid retrieval preserve enough provenance to be reviewable?
+- can local runtime answers be compared across repeated runs?
+- can a downstream consumer evaluate bundle sufficiency without asking Chronicle core to become an execution runtime?
+
+The repository is intentionally boundary-conscious:
+
+- it treats Chronicle primary records as authoritative
+- it keeps ingest, retrieval, runtime, and evaluation concerns explicit
+- it supports local-only deterministic validation paths first
+- it avoids implicit write-back into Chronicle core
+- it leaves hosted provider integrations and other future extensions outside the
+  default baseline until they can be added through clear plugin seams
 
 Japanese README: [README.ja.md](README.ja.md)
 
@@ -24,6 +59,8 @@ This repository currently provides:
 - sanitized real-bundle fixtures for contract tests
 - graph-only and hybrid retrieval result scaffolding with shared provenance,
   overlap tracking, and provider-neutral vector seams
+- a pluggable fixture registry with committed baseline fixtures and optional
+  manifest-driven fixture packs
 
 ## Repository Layout
 
@@ -80,9 +117,50 @@ example `PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.
 ```bash
 chronicle-external-query validate-bundle /path/to/handoff-bundle --json
 chronicle-external-query show-bundle /path/to/handoff-bundle --json
+chronicle-external-query list-fixtures --json
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --json
 chronicle-external-query render-artifact-report trial-artifact.json --output trial-report.md --json
 chronicle-external-query render-comparison-report first-artifact.json second-artifact.json --output comparison-report.md --json
+```
+
+## Fixture Registry
+
+Milestone F adds a pluggable fixture registry without changing the supported
+baseline path.
+
+- `baseline_minimal` and `baseline_representative` remain committed in-repo
+  fixtures and still back the default test suite
+- optional fixture packs can be added through `fixture-pack.json` manifests
+- optional fixture pack directories can be passed with `--fixture-dir` or
+  discovered from `CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS`
+
+Example:
+
+```bash
+chronicle-external-query list-fixtures --json --no-env-fixture-dirs
+CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS=/path/to/fixture-pack chronicle-external-query list-fixtures --json
+```
+
+Manifest shape:
+
+```json
+{
+  "manifest_version": "1.0",
+  "source_name": "comparison_pack",
+  "fixtures": [
+    {
+      "fixture_id": "provider_comparison_bundle",
+      "fixture_kind": "optional_provider_comparison_pack",
+      "bundle_dir": "bundles/provider_comparison_bundle",
+      "vector_fixture": "vectors/provider_comparison_matches.json",
+      "metadata": {
+        "origin": "sanitized Chronicle-derived fixture pack",
+        "sanitization_status": "sanitized",
+        "intended_test_scope": ["provider_comparison"]
+      }
+    }
+  ]
+}
 ```
 
 ## CI Baseline
@@ -97,3 +175,7 @@ The same baseline runs in GitHub Actions on pushes and pull requests to `main`.
 
 The first supported local downstream runtime baseline is documented in
 [docs/releases/v0.2.0-first-supported-baseline.md](docs/releases/v0.2.0-first-supported-baseline.md).
+
+The post-`v0.2.0` extension track now has Milestone F implemented locally:
+fixture growth is registry-driven, while the default smoke and `pytest` path
+remain pinned to committed baseline fixtures.

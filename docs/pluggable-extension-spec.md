@@ -25,6 +25,12 @@ work, with special attention to:
 
 ### 1. Fixture Source Protocol
 
+Current implementation status:
+Milestone F is now implemented for the fixture side of this specification. The
+repository ships `chronicle_external_query.fixtures.FixtureRegistry`, two
+committed baseline fixture registrations, and manifest-driven optional fixture
+pack loading through `fixture-pack.json`.
+
 Purpose:
 Load optional fixture suites without hardcoding every future bundle under
 `tests/fixtures/`.
@@ -57,6 +63,28 @@ class FixtureSet:
 Core rule:
 The default test suite continues to use committed baseline fixtures directly.
 The registry is for optional fixture packs, not for replacing the baseline.
+
+Implemented manifest shape:
+
+```json
+{
+  "manifest_version": "1.0",
+  "source_name": "comparison_pack",
+  "fixtures": [
+    {
+      "fixture_id": "provider_comparison_bundle",
+      "fixture_kind": "optional_provider_comparison_pack",
+      "bundle_dir": "bundles/provider_comparison_bundle",
+      "vector_fixture": "vectors/provider_comparison_matches.json",
+      "metadata": {
+        "origin": "sanitized Chronicle-derived fixture pack",
+        "sanitization_status": "sanitized",
+        "intended_test_scope": ["provider_comparison"]
+      }
+    }
+  ]
+}
+```
 
 ### 2. Answer Generator Protocol
 
@@ -190,6 +218,7 @@ Remain unchanged:
 
 - `pytest`
 - `bash scripts/smoke_clean_checkout.sh`
+- `chronicle-external-query list-fixtures --json --no-env-fixture-dirs`
 
 These must not require plugins, credentials, or local model availability.
 

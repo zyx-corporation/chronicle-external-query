@@ -29,6 +29,9 @@ through plugins.
 
 ## Milestone F: Pluggable Fixture Registry
 
+Status:
+Completed on 2026-06-30.
+
 Goal:
 Turn fixture expansion into a registry-driven extension surface instead of
 growing one fixed in-repo fixture tree.
@@ -45,6 +48,16 @@ Exit Criteria:
 - the core test suite still runs from committed baseline fixtures only
 - optional fixture packs can be added through a registry/config surface
 - fixture metadata explains origin, sanitization, and intended use
+
+Delivered:
+
+- `chronicle_external_query.fixtures` now provides `FixtureRegistry`,
+  `FixtureSet`, and a fixture-source protocol
+- committed baseline fixtures are registered as `baseline_minimal` and
+  `baseline_representative`
+- optional fixture packs can be loaded from `fixture-pack.json` through
+  `--fixture-dir` or `CHRONICLE_EXTERNAL_QUERY_FIXTURE_DIRS`
+- `list-fixtures` exposes the resolved registry as a local inspection surface
 
 ## Milestone G: Provider Plugin Surface and Credential Isolation
 
