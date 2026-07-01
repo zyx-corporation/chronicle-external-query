@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VENV_DIR="${ROOT_DIR}/.venv"
+VENV_DIR="${VENV_DIR:-${ROOT_DIR}/.venv}"
 BUNDLE_DIR="${1:-tests/fixtures/query_engine_bundle/representative_cli_bundle}"
 OUTPUT_DIR="${2:-/tmp/chronicle-external-query-operator-capture}"
 VECTOR_FIXTURE="${VECTOR_FIXTURE:-tests/fixtures/vector_matches/representative-vector-matches.json}"
@@ -23,6 +23,21 @@ run() {
   "$@"
 }
 
+run_stdout_to_file() {
+  local output_path="$1"
+  shift
+  if [ "${DRY_RUN}" = "1" ]; then
+    printf '[operator-capture] dry-run: %q' "$1"
+    shift || true
+    for arg in "$@"; do
+      printf ' %q' "${arg}"
+    done
+    printf ' > %q\n' "${output_path}"
+    return 0
+  fi
+  "$@" > "${output_path}"
+}
+
 usage() {
   cat <<'EOF'
 Usage:
@@ -35,6 +50,7 @@ Behavior:
   - saves an artifact and markdown trial report under OUTPUT_DIR
 
 Environment:
+  VENV_DIR        Override the virtualenv directory
   DRY_RUN=1       Print commands without executing
   VECTOR_FIXTURE  Override the vector fixture path
   QUERY_TEXT      Override the query text
@@ -62,39 +78,24 @@ RUN_QUERY_JSON="${OUTPUT_DIR}/run-query.json"
 TRIAL_REPORT_MD="${OUTPUT_DIR}/trial-report.md"
 REPORT_JSON="${OUTPUT_DIR}/render-artifact-report.json"
 
-run "${VENV_DIR}/bin/chronicle-external-query" validate-bundle "${BUNDLE_DIR}" --json
-if [ "${DRY_RUN}" != "1" ]; then
-  "${VENV_DIR}/bin/chronicle-external-query" validate-bundle "${BUNDLE_DIR}" --json > "${VALIDATE_JSON}"
-fi
+run_stdout_to_file "${VALIDATE_JSON}" \
+  "${VENV_DIR}/bin/chronicle-external-query" validate-bundle "${BUNDLE_DIR}" --json
 
-run "${VENV_DIR}/bin/chronicle-external-query" show-bundle "${BUNDLE_DIR}" --json
-if [ "${DRY_RUN}" != "1" ]; then
-  "${VENV_DIR}/bin/chronicle-external-query" show-bundle "${BUNDLE_DIR}" --json > "${SHOW_JSON}"
-fi
+run_stdout_to_file "${SHOW_JSON}" \
+  "${VENV_DIR}/bin/chronicle-external-query" show-bundle "${BUNDLE_DIR}" --json
 
-run "${VENV_DIR}/bin/chronicle-external-query" run-query "${BUNDLE_DIR}" \
+run_stdout_to_file "${RUN_QUERY_JSON}" \
+  "${VENV_DIR}/bin/chronicle-external-query" run-query "${BUNDLE_DIR}" \
   --query "${QUERY_TEXT}" \
   --mode hybrid \
   --vector-fixture "${VECTOR_FIXTURE}" \
   --output "${ARTIFACT_JSON}" \
   --json
-if [ "${DRY_RUN}" != "1" ]; then
-  "${VENV_DIR}/bin/chronicle-external-query" run-query "${BUNDLE_DIR}" \
-    --query "${QUERY_TEXT}" \
-    --mode hybrid \
-    --vector-fixture "${VECTOR_FIXTURE}" \
-    --output "${ARTIFACT_JSON}" \
-    --json > "${RUN_QUERY_JSON}"
-fi
 
-run "${VENV_DIR}/bin/chronicle-external-query" render-artifact-report "${ARTIFACT_JSON}" \
+run_stdout_to_file "${REPORT_JSON}" \
+  "${VENV_DIR}/bin/chronicle-external-query" render-artifact-report "${ARTIFACT_JSON}" \
   --output "${TRIAL_REPORT_MD}" \
   --json
-if [ "${DRY_RUN}" != "1" ]; then
-  "${VENV_DIR}/bin/chronicle-external-query" render-artifact-report "${ARTIFACT_JSON}" \
-    --output "${TRIAL_REPORT_MD}" \
-    --json > "${REPORT_JSON}"
-fi
 
 if [ "${DRY_RUN}" != "1" ]; then
   printf '%s\n' "${OUTPUT_DIR}"

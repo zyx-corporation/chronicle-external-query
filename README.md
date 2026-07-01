@@ -131,6 +131,8 @@ bash scripts/operator_capture.sh
 
 If your default `python3` is older than 3.11, set `PYTHON_BIN` explicitly, for
 example `PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh`.
+Set `VENV_DIR=/path/to/.venv` when you want the operator helper scripts to use
+an alternate virtualenv location.
 
 ## Local CLI
 

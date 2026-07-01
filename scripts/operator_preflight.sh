@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VENV_DIR="${ROOT_DIR}/.venv"
+VENV_DIR="${VENV_DIR:-${ROOT_DIR}/.venv}"
 DRY_RUN="${DRY_RUN:-0}"
 BUNDLE_DIR="${BUNDLE_DIR:-tests/fixtures/query_engine_bundle/representative_cli_bundle}"
 VECTOR_FIXTURE="${VECTOR_FIXTURE:-tests/fixtures/vector_matches/representative-vector-matches.json}"
@@ -69,6 +69,7 @@ Behavior:
   - runs a representative hybrid query and renders a markdown report
 
 Environment:
+  VENV_DIR        Override the virtualenv directory
   PYTHON_BIN     Override the Python 3.11+ interpreter
   DRY_RUN=1      Print commands without executing
   BUNDLE_DIR     Override the representative bundle fixture directory

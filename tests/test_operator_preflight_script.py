@@ -24,6 +24,7 @@ def test_operator_preflight_help_includes_expected_sections():
 
 
 def test_operator_preflight_dry_run_prints_expected_commands():
+    venv_dir = "/tmp/test-operator-preflight-venv"
     result = subprocess.run(
         ["bash", str(SCRIPT_PATH)],
         cwd=REPO_ROOT,
@@ -34,12 +35,14 @@ def test_operator_preflight_dry_run_prints_expected_commands():
             "PATH": "/usr/bin:/bin:/opt/homebrew/bin",
             "PYTHON_BIN": "/usr/bin/python3",
             "DRY_RUN": "1",
+            "VENV_DIR": venv_dir,
             "ARTIFACT_PATH": "/tmp/test-operator-preflight-artifact.json",
             "REPORT_PATH": "/tmp/test-operator-preflight-report.md",
         },
     )
 
     assert result.returncode == 0
+    assert f"/usr/bin/python3 -m venv {venv_dir}" in result.stdout
     assert "pip install -e" in result.stdout
     assert "pytest -q" in result.stdout
     assert "chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/representative_cli_bundle --json" in result.stdout
