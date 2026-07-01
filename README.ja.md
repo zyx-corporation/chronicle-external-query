@@ -321,6 +321,7 @@ release-closeout artifacts:
 - [v0.3.0 Release Notes](docs/releases/v0.3.0-release-notes.md)
 - [v0.3.0 Completion Checklist](docs/releases/v0.3.0-completion-checklist.md)
 - [v0.3.0 Boundary Summary](docs/releases/v0.3.0-boundary-summary.md)
+- [v0.3.0 Chronicle Stack Handoff](docs/releases/v0.3.0-chronicle-stack-handoff.md)
 
 最初の supported local downstream runtime baseline は
 [docs/releases/v0.2.0-first-supported-baseline.md](docs/releases/v0.2.0-first-supported-baseline.md)

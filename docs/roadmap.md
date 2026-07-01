@@ -236,3 +236,10 @@ Release-closeout artifacts for the first supported baseline:
 - [v0.2.0 Completion Checklist](releases/v0.2.0-completion-checklist.md)
 - [v0.2.0 Deferred Items](releases/v0.2.0-defer-list.md)
 - [v0.2.0 First Supported Baseline](releases/v0.2.0-first-supported-baseline.md)
+
+Post-`v0.2.0` extension-release closeout artifacts:
+
+- [v0.3.0 Completion Checklist](releases/v0.3.0-completion-checklist.md)
+- [v0.3.0 Boundary Summary](releases/v0.3.0-boundary-summary.md)
+- [v0.3.0 Release Notes](releases/v0.3.0-release-notes.md)
+- [v0.3.0 Chronicle Stack Handoff](releases/v0.3.0-chronicle-stack-handoff.md)
