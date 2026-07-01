@@ -56,6 +56,12 @@ Run the release-candidate gate locally:
 bash scripts/release_candidate_gate.sh
 ```
 
+Run the current-checkout operator preflight locally:
+
+```bash
+bash scripts/operator_preflight.sh
+```
+
 Run the same gate with optional plugin checks enabled:
 
 ```bash
@@ -82,6 +88,7 @@ Notes:
 - set `ACT_EVENT_FILE=/path/to/event.json` to test alternate release inputs
 - set `ACT_OPTIONAL_EVENT_FILE=/path/to/event.json` to override only the optional-plugin rehearsal inputs
 - `doctor` checks `act`, Docker, the Docker Desktop credential helper, and the event payload path before a rehearsal run
+- `operator_preflight.sh` is the fastest same-checkout confirmation path before a release-candidate gate run
 - `all` runs the local CI baseline and then the release workflow through `build-release-notes`, letting the workflow dependency chain cover `verify` once
 - `release-verify-optional` runs the same local release gate with `run_optional_plugin_matrix=true`
 - `ACT_ARGS` and trailing `-- ...` let operators pass through extra `act` flags for local debugging or cache-control runs
