@@ -25,7 +25,8 @@ bash scripts/smoke_clean_checkout.sh
 ```
 
 This script creates `.venv` if needed, installs the package in editable mode,
-runs `pytest`, validates the minimal fixture bundle, and exercises a
+runs `ruff check src tests`, runs `pytest`, validates the minimal fixture
+bundle, and exercises a
 representative hybrid query plus markdown report rendering.
 
 For same-checkout verification after the first install, you can also run:

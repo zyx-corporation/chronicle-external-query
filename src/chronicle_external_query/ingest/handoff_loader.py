@@ -10,7 +10,6 @@ from chronicle_external_query.models import (
     BundlePaths,
     ContractConsistencyError,
     HandoffBundle,
-    ImportValidationError,
     InvalidBundleObjectError,
     InvalidJsonError,
     MissingRequiredFileError,

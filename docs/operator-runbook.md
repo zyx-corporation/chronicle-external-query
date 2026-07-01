@@ -54,6 +54,7 @@ For a shortest-path fresh clone workflow, see [Clean Checkout](clean-checkout.md
 
 What the baseline smoke covers:
 
+- `ruff check src tests`
 - editable install from the current checkout
 - full `pytest`
 - minimal bundle validation and inspection

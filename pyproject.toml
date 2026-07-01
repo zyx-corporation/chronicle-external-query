@@ -20,6 +20,7 @@ chronicle-external-query = "chronicle_external_query.cli:main"
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
+  "ruff>=0.15.0",
 ]
 
 [tool.setuptools]
