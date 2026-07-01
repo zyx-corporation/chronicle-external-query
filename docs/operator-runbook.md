@@ -17,6 +17,12 @@ Repository CI baseline:
 bash scripts/smoke_clean_checkout.sh
 ```
 
+Current-checkout operator preflight:
+
+```bash
+bash scripts/operator_preflight.sh
+```
+
 GitHub Actions also runs the same baseline on pushes and pull requests to
 `main`.
 
@@ -47,6 +53,13 @@ What the baseline smoke covers:
 - minimal bundle validation and inspection
 - representative hybrid query using only checked-in local fixtures
 - markdown trial and comparison report rendering
+
+What operator preflight adds:
+
+- same-checkout editable install refresh
+- full `pytest` before bundle inspection
+- representative bundle validation from the current working tree
+- representative hybrid query artifact and markdown trial report generation
 
 If the machine's default `python3` is older than 3.11, set `PYTHON_BIN`
 explicitly before running the smoke script.
