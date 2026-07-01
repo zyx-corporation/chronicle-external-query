@@ -23,6 +23,12 @@ Current-checkout operator preflight:
 bash scripts/operator_preflight.sh
 ```
 
+Capture a handoff-ready evidence bundle from the current checkout:
+
+```bash
+bash scripts/operator_capture.sh
+```
+
 GitHub Actions also runs the same baseline on pushes and pull requests to
 `main`.
 
@@ -60,6 +66,13 @@ What operator preflight adds:
 - full `pytest` before bundle inspection
 - representative bundle validation from the current working tree
 - representative hybrid query artifact and markdown trial report generation
+
+What operator capture adds:
+
+- one directory containing validation JSON
+- bundle summary JSON
+- saved trial artifact JSON
+- rendered markdown trial report
 
 If the machine's default `python3` is older than 3.11, set `PYTHON_BIN`
 explicitly before running the smoke script.
