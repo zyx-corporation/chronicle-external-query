@@ -119,6 +119,7 @@ Current local baseline:
 
 ```bash
 pip install -e ".[dev]"
+ruff check src tests
 pytest
 chronicle-external-query validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
 chronicle-external-query show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
@@ -129,6 +130,7 @@ chronicle-external-query run-query tests/fixtures/query_engine_bundle/minimal_cl
 
 Current CI smoke also exercises:
 
+- `ruff check src tests`
 - hybrid queries with a local vector fixture
 - markdown trial report rendering from a saved artifact
 - markdown comparison report rendering from two saved artifacts

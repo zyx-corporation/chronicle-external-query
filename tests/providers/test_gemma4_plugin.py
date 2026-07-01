@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import json
-
 import pytest
 
 from chronicle_external_query.plugins import load_provider_plugin

@@ -18,7 +18,7 @@ from chronicle_external_query.evaluation.artifacts import (
 )
 from chronicle_external_query.fixtures import FixtureRegistry, FixtureRegistryError
 from chronicle_external_query.ingest.handoff_loader import HandoffLoader
-from chronicle_external_query.messages import DEFAULT_LOCALE, SUPPORTED_LOCALES, message, resolve_locale
+from chronicle_external_query.messages import SUPPORTED_LOCALES, message, resolve_locale
 from chronicle_external_query.models import ImportValidationError
 from chronicle_external_query.plugins import (
     ProviderPluginError,

@@ -48,6 +48,7 @@ fi
 "${VENV_DIR}/bin/python" -m pip install --upgrade pip
 "${VENV_DIR}/bin/pip" install -e ".[dev]"
 
+"${VENV_DIR}/bin/ruff" check src tests
 "${VENV_DIR}/bin/pytest" -q
 "${VENV_DIR}/bin/chronicle-external-query" validate-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json
 "${VENV_DIR}/bin/chronicle-external-query" show-bundle tests/fixtures/query_engine_bundle/minimal_cli_bundle --json

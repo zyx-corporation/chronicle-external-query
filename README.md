@@ -108,6 +108,7 @@ chronicle-external-query/
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+ruff check src tests
 pytest
 ```
 
@@ -116,6 +117,9 @@ One-command baseline smoke:
 ```bash
 bash scripts/smoke_clean_checkout.sh
 ```
+
+The smoke path runs both `ruff check src tests` and `pytest` before the bundle
+validation and query/report checks.
 
 Current-checkout operator preflight:
 
