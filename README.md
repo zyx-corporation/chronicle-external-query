@@ -254,9 +254,6 @@ Example:
 ```bash
 bash scripts/bootstrap_plugin_env.sh
 source .env.local.plugins
-GEMMA4_ENABLED=true \
-GEMMA4_BASE_URL=http://127.0.0.1:11434 \
-GEMMA4_MODEL=gemma4 \
 chronicle-external-query run-query tests/fixtures/query_engine_bundle/representative_cli_bundle --query "release planning follow-up context" --mode hybrid --vector-fixture tests/fixtures/vector_matches/representative-vector-matches.json --answer-plugin gemma4 --json
 ```
 
@@ -281,8 +278,8 @@ evaluation flow.
 Required environment:
 
 - `OPENAI_COMPATIBLE_HOSTED_ENABLED=true`
-- `OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example`
-- `OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model`
+- `OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://api.openai.com`
+- `OPENAI_COMPATIBLE_HOSTED_MODEL=gpt-5.4`
 - `OPENAI_COMPATIBLE_HOSTED_API_KEY=...`
 
 Recommended local staging path:
@@ -301,9 +298,10 @@ Optional environment:
 Example:
 
 ```bash
+source .env.local.plugins
 OPENAI_COMPATIBLE_HOSTED_ENABLED=true \
-OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example \
-OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model \
+OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://api.openai.com \
+OPENAI_COMPATIBLE_HOSTED_MODEL=gpt-5.4 \
 OPENAI_COMPATIBLE_HOSTED_API_KEY=secret \
 chronicle-external-query compare-query-runs tests/fixtures/query_engine_bundle/representative_cli_bundle --query "release planning follow-up context" --mode hybrid --vector-fixture tests/fixtures/vector_matches/representative-vector-matches.json --answer-plugin openai-compatible-hosted --baseline-output baseline-artifact.json --plugin-output hosted-artifact.json --json
 ```

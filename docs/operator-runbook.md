@@ -155,9 +155,8 @@ Current provider plugin boundary rules:
 Opt-in local gemma4 answer generation:
 
 ```bash
-GEMMA4_ENABLED=true \
-GEMMA4_BASE_URL=http://127.0.0.1:11434 \
-GEMMA4_MODEL=gemma4 \
+bash scripts/bootstrap_plugin_env.sh
+source .env.local.plugins
 chronicle-external-query run-query /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin gemma4 --json
 ```
 
@@ -174,9 +173,10 @@ Operational expectations:
 Opt-in hosted provider comparison:
 
 ```bash
+source .env.local.plugins
 OPENAI_COMPATIBLE_HOSTED_ENABLED=true \
-OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://provider.example \
-OPENAI_COMPATIBLE_HOSTED_MODEL=provider-model \
+OPENAI_COMPATIBLE_HOSTED_BASE_URL=https://api.openai.com \
+OPENAI_COMPATIBLE_HOSTED_MODEL=gpt-5.4 \
 OPENAI_COMPATIBLE_HOSTED_API_KEY=secret \
 chronicle-external-query compare-query-runs /path/to/handoff-bundle --query "release planning context" --mode graph --answer-plugin openai-compatible-hosted --json
 ```
