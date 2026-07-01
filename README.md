@@ -386,7 +386,7 @@ then let GitHub run the publish path on tag push or hosted workflow dispatch.
 
 ## Release Status
 
-The current release-preparation target is `v0.3.0`.
+The current release-preparation target is `v0.3.2`.
 
 Release-closeout artifacts:
 
@@ -394,6 +394,10 @@ Release-closeout artifacts:
 - [v0.3.0 Completion Checklist](docs/releases/v0.3.0-completion-checklist.md)
 - [v0.3.0 Boundary Summary](docs/releases/v0.3.0-boundary-summary.md)
 - [v0.3.0 Chronicle Stack Handoff](docs/releases/v0.3.0-chronicle-stack-handoff.md)
+- [v0.3.1 Release Notes](docs/releases/v0.3.1-release-notes.md)
+- [v0.3.1 Boundary Summary](docs/releases/v0.3.1-boundary-summary.md)
+- [v0.3.2 Release Notes](docs/releases/v0.3.2-release-notes.md)
+- [v0.3.2 Boundary Summary](docs/releases/v0.3.2-boundary-summary.md)
 
 The original first supported local downstream runtime baseline remains
 documented in
@@ -423,5 +427,5 @@ Milestone K is now implemented too: Chronicle write-back remains explicitly out
 of scope, so the roadmap is complete without introducing any accidental
 Chronicle mutation path.
 
-That means the repository is now prepared for a `v0.3.0` release on the
+That means the repository is now prepared for a `v0.3.2` release on the
 current supported boundary.
