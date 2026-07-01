@@ -28,12 +28,22 @@ This script creates `.venv` if needed, installs the package in editable mode,
 runs `pytest`, validates the minimal fixture bundle, and exercises a
 representative hybrid query plus markdown report rendering.
 
+For same-checkout verification after the first install, you can also run:
+
+```bash
+bash scripts/operator_preflight.sh
+bash scripts/operator_capture.sh
+```
+
 If your default `python3` is older than 3.11, set `PYTHON_BIN` explicitly when
 running the script:
 
 ```bash
 PYTHON_BIN=/usr/local/bin/python3.11 bash scripts/smoke_clean_checkout.sh
 ```
+
+Set `VENV_DIR=/path/to/.venv` when you want the operator helper scripts to use
+an alternate virtualenv location.
 
 ## Local Act Rehearsal
 
